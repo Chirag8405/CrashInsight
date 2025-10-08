@@ -5,10 +5,14 @@ from flask import Flask, jsonify, request
 # from flask_cors import CORS
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, accuracy_score
-from mlxtend.frequent_patterns import apriori, association_rules
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+import graphviz
+import base64
+from io import StringIO
+from mlxtend.frequent_patterns import apriori, association_rules  # Not available
 import json
 from datetime import datetime
 import warnings
@@ -194,29 +198,152 @@ class TrafficAccidentAnalyzer:
         kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
         clusters = kmeans.fit_predict(X_scaled)
         
-        # Analyze clusters
+        # Enhanced cluster analysis with more insights
         cluster_df['cluster'] = clusters
         cluster_analysis = {}
+        total_accidents = len(cluster_df)
         
         for i in range(n_clusters):
             cluster_data = cluster_df[cluster_df['cluster'] == i]
+            
+            # Calculate injury severity distribution
+            injury_dist = {
+                'no_injury': len(cluster_data[cluster_data['injuries_total'] == 0]),
+                'minor': len(cluster_data[(cluster_data['injuries_total'] > 0) & (cluster_data['injuries_total'] <= 2)]),
+                'serious': len(cluster_data[cluster_data['injuries_total'] > 2])
+            }
+            
+            # Find most common accident characteristics
+            weather_col = [col for col in cluster_data.columns if 'weather' in col and col.endswith('_encoded')]
+            lighting_col = [col for col in cluster_data.columns if 'lighting' in col and col.endswith('_encoded')]
+            crash_type_col = [col for col in cluster_data.columns if 'first_crash_type' in col and col.endswith('_encoded')]
+            
             cluster_analysis[f'cluster_{i}'] = {
                 'size': len(cluster_data),
-                'avg_injuries': float(cluster_data['injuries_total'].mean()),
+                'percentage': round((len(cluster_data) / total_accidents) * 100, 1),
+                'avg_injuries': round(float(cluster_data['injuries_total'].mean()), 2),
+                'injury_distribution': injury_dist,
                 'common_hour': int(cluster_data['crash_hour'].mode()[0]) if not cluster_data['crash_hour'].mode().empty else 0,
-                'common_day': int(cluster_data['crash_day_of_week'].mode()[0]) if not cluster_data['crash_day_of_week'].mode().empty else 0
+                'common_day': int(cluster_data['crash_day_of_week'].mode()[0]) if not cluster_data['crash_day_of_week'].mode().empty else 0,
+                'common_month': int(cluster_data['crash_month'].mode()[0]) if not cluster_data['crash_month'].mode().empty else 1,
+                'risk_level': 'High' if cluster_data['injuries_total'].mean() > 1.0 else 'Medium' if cluster_data['injuries_total'].mean() > 0.5 else 'Low',
+                'cluster_label': f"Cluster {i}" # Will be enhanced based on characteristics
             }
         
+        # Calculate clustering quality metrics
+        inertia = kmeans.inertia_
+        
         return {
+            'algorithm': 'K-Means',
             'n_clusters': n_clusters,
+            'total_accidents': total_accidents,
+            'inertia': float(inertia),
             'cluster_analysis': cluster_analysis,
-            'cluster_centers': kmeans.cluster_centers_.tolist()
+            'cluster_centers': kmeans.cluster_centers_.tolist(),
+            'feature_names': feature_cols,
+            'silhouette_info': 'Available upon request'  # Could add silhouette analysis
         }
     
+    def _safe_export_text(self, model, feature_names, max_depth=15):
+        """Safely export decision tree text with error handling"""
+        try:
+            return export_text(model, feature_names=feature_names, max_depth=max_depth)
+        except Exception as e:
+            print(f"Error exporting tree text: {e}")
+            return f"Error generating tree structure: {str(e)}"
+    
+    def generate_graphviz_tree(self, model, feature_names, class_names):
+        """Generate a perfectly aligned decision tree using graphviz"""
+        try:
+            # Create cleaner feature names for display (without emojis)
+            clean_feature_names = []
+            for name in feature_names:
+                if 'first_crash_type' in name:
+                    clean_name = 'Collision Type\n(1-7: Minor, 8+: Severe)'
+                elif 'num_units' in name:
+                    clean_name = 'Vehicle Count\n(Multi-vehicle risk)'
+                elif 'prim_contributory_cause' in name:
+                    clean_name = 'Primary Cause\n(Driver/Road/Weather)'
+                elif 'weather_condition' in name:
+                    clean_name = 'Weather Condition\n(Clear/Rain/Snow)'
+                elif 'lighting_condition' in name:
+                    clean_name = 'Lighting Condition\n(Day/Night/Dawn)'
+                elif 'traffic_control_device' in name:
+                    clean_name = 'Traffic Control\n(Signal/Sign/None)'
+                elif 'crash_hour' in name:
+                    clean_name = 'Hour of Day\n(Rush vs Off-peak)'
+                elif 'crash_day_of_week' in name:
+                    clean_name = 'Day of Week\n(Weekday vs Weekend)'
+                else:
+                    clean_name = (name.replace('_encoded', '')
+                                .replace('_', ' ').title())
+                clean_feature_names.append(clean_name)
+            
+            # Create cleaner class names based on actual severity categories (without emojis)
+            clean_class_names = []
+            for class_name in class_names:
+                if str(class_name) == 'Fatal':
+                    clean_class_names.append('FATAL\nAccident\n(Life Lost)')
+                elif str(class_name) == 'Serious Injury':
+                    clean_class_names.append('SERIOUS\nInjury\n(Incapacitating)')
+                elif str(class_name) == 'Minor Injury':
+                    clean_class_names.append('MINOR\nInjury\n(Non-incapacitating)')
+                elif str(class_name) == 'No Injury':
+                    clean_class_names.append('NO INJURY\nProperty\nDamage Only')
+                else:
+                    clean_class_names.append(f'{class_name}\nSeverity\nLevel')
+            
+            # Export tree to DOT format - Optimized for readability and size
+            dot_data = export_graphviz(
+                model,
+                out_file=None,
+                feature_names=clean_feature_names,
+                class_names=clean_class_names,
+                filled=True,
+                rounded=True,
+                special_characters=True,
+                proportion=False,  # Simplified node content
+                precision=2,  # Reduced precision for cleaner display
+                max_depth=6,  # Match model depth
+                impurity=False,  # Remove gini for cleaner nodes
+                leaves_parallel=False,  # More compact layout
+                rotate=False  # Top-down layout
+            )
+            
+            # Create graphviz object and render to SVG
+            graph = graphviz.Source(dot_data, format='svg')
+            svg_data = graph.pipe(format='svg').decode('utf-8')
+            
+            # Encode SVG as base64 for easy transport
+            svg_base64 = base64.b64encode(svg_data.encode('utf-8')).decode('utf-8')
+            
+            return {
+                'svg_data': svg_data,
+                'svg_base64': svg_base64,
+                'dot_source': dot_data
+            }
+            
+        except Exception as e:
+            print(f"Error generating graphviz tree: {e}")
+            return {
+                'error': f"Failed to generate graphviz tree: {str(e)}",
+                'svg_data': None,
+                'svg_base64': None,
+                'dot_source': None
+            }
+    
     def train_severity_model(self):
-        """Train a model to predict crash severity"""
-        # Prepare features
+        """Train both Random Forest and Decision Tree models to predict crash severity"""
+        # Prepare features - exclude injury-related features to avoid circular dependency
         feature_cols = [col for col in self.processed_df.columns if col.endswith('_encoded')]
+        
+        # Remove injury-related features to predict severity from conditions, not outcomes
+        injury_related = ['most_severe_injury_encoded', 'injuries_total_encoded', 'injuries_fatal_encoded', 
+                         'injuries_incapacitating_encoded', 'injuries_non_incapacitating_encoded', 
+                         'injuries_reported_not_evident_encoded', 'injuries_no_indication_encoded']
+        feature_cols = [col for col in feature_cols if col not in injury_related]
+        
+        # Add temporal and count features
         feature_cols.extend(['crash_hour', 'crash_day_of_week', 'crash_month', 'num_units'])
         
         # Remove rows with NaN values
@@ -225,24 +352,102 @@ class TrafficAccidentAnalyzer:
         X = model_df[feature_cols]
         y = model_df['severity']
         
-        # Split data
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        # Split data with stratification to maintain class balance
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
         
-        # Train model
-        model = RandomForestClassifier(n_estimators=100, random_state=42)
-        model.fit(X_train, y_train)
+        # Train Random Forest with class balancing
+        rf_model = RandomForestClassifier(
+            n_estimators=100, 
+            random_state=42, 
+            max_depth=10,
+            class_weight='balanced'  # Automatically balance classes
+        )
+        rf_model.fit(X_train, y_train)
+        rf_pred = rf_model.predict(X_test)
+        rf_accuracy = accuracy_score(y_test, rf_pred)
+        rf_cm = confusion_matrix(y_test, rf_pred)
         
-        # Evaluate
-        y_pred = model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
+        # Train Decision Tree - Sweet spot: moderate size with all classes
+        dt_model = DecisionTreeClassifier(
+            random_state=42, 
+            max_depth=7,  # Moderate depth 
+            min_samples_split=50,  # Balanced splitting threshold
+            min_samples_leaf=30,   # Moderate leaf size
+            min_impurity_decrease=0.005,  # Moderate sensitivity
+            max_leaf_nodes=20,  # Allow reasonable complexity
+            class_weight='balanced'  # Essential for minority classes
+        )
+        dt_model.fit(X_train, y_train)
+        dt_pred = dt_model.predict(X_test)
+        dt_accuracy = accuracy_score(y_test, dt_pred)
+        dt_cm = confusion_matrix(y_test, dt_pred)
         
-        # Feature importance
-        feature_importance = dict(zip(feature_cols, model.feature_importances_))
+        # Get feature importance for both models
+        rf_feature_importance = dict(zip(feature_cols, rf_model.feature_importances_))
+        dt_feature_importance = dict(zip(feature_cols, dt_model.feature_importances_))
+        
+        # Filter for accident-relevant features (exclude injury outcomes - we want causal factors)
+        accident_relevant_features = [f for f in feature_cols if not any(injury_term in f for injury_term in 
+                                    ['most_severe_injury', 'injuries_total', 'injuries_fatal', 'injuries_incapacitating', 
+                                     'injuries_non_incapacitating', 'injuries_reported_not_evident', 'injuries_no_indication'])]
+        rf_accident_features = {k: v for k, v in rf_feature_importance.items() if k in accident_relevant_features}
+        rf_accident_features = dict(sorted(rf_accident_features.items(), key=lambda x: x[1], reverse=True))
+        
+        # Get unique class labels for confusion matrix interpretation
+        class_labels = list(set(y_test.unique()) | set(rf_pred) | set(dt_pred))
+        class_labels.sort()
+        
+        # Calculate precision, recall, f1-score for both models
+        rf_report = classification_report(y_test, rf_pred, output_dict=True)
+        dt_report = classification_report(y_test, dt_pred, output_dict=True)
+        
+        # Generate decision tree structure for visualization
+        try:
+            dt_tree_rules = export_text(dt_model, feature_names=feature_cols, max_depth=6)
+        except Exception as e:
+            print(f"Error generating decision tree rules: {e}")
+            dt_tree_rules = "Error: Could not generate decision tree structure"
+        
+        # Generate graphviz visualization for perfect tree alignment
+        graphviz_tree = self.generate_graphviz_tree(dt_model, feature_cols, class_labels)
+        
+        # Get Random Forest structure info
+        rf_n_estimators = rf_model.n_estimators
+        rf_max_depth = rf_model.max_depth
         
         return {
-            'accuracy': float(accuracy),
-            'feature_importance': {k: float(v) for k, v in feature_importance.items()},
-            'model_performance': classification_report(y_test, y_pred, output_dict=True)
+            'random_forest': {
+                'accuracy': float(rf_accuracy),
+                'feature_importance': {k: float(v) for k, v in rf_feature_importance.items()},
+                'confusion_matrix': rf_cm.tolist(),
+                'classification_report': rf_report
+            },
+            'decision_tree': {
+                'accuracy': float(dt_accuracy),
+                'feature_importance': {k: float(v) for k, v in dt_feature_importance.items()},
+                'confusion_matrix': dt_cm.tolist(),
+                'classification_report': dt_report
+            },
+            'class_labels': class_labels,
+            'test_size': len(y_test),
+            'model_comparison': {
+                'rf_accuracy': float(rf_accuracy),
+                'dt_accuracy': float(dt_accuracy),
+                'better_model': 'Random Forest' if rf_accuracy > dt_accuracy else 'Decision Tree',
+                'accuracy_difference': float(abs(rf_accuracy - dt_accuracy))
+            },
+            'model_structures': {
+                'decision_tree_rules': dt_tree_rules,
+                'decision_tree_full': self._safe_export_text(dt_model, feature_cols, max_depth=15),  # Full tree for modal
+                'decision_tree_graphviz': graphviz_tree,  # Perfect graphviz tree visualization
+                'random_forest_info': {
+                    'n_estimators': rf_n_estimators,
+                    'max_depth': rf_max_depth,
+                    'feature_count': len(feature_cols),
+                    'top_features': list(rf_accident_features.items())[:8],  # Top accident-relevant features
+                    'all_features': list(rf_feature_importance.items())[:15]  # All features for modal
+                }
+            }
         }
     
     def generate_association_rules(self, min_support=0.01):
