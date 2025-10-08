@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Chart as ChartJS,
@@ -16,12 +17,7 @@ import {
 } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { 
-  ChartBarIcon, 
-  CpuChipIcon,
-  DocumentChartBarIcon,
-  AcademicCapIcon,
   ClockIcon,
-  MapPinIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
@@ -136,7 +132,9 @@ interface ClusterAnalysis {
 const API_BASE_URL = 'http://localhost:5000/api';
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const activeTab = searchParams.get('tab') || 'analytics';
   const [loadingAnalytics, setLoadingAnalytics] = useState(true);
   const [loadingML, setLoadingML] = useState(false);
   const [loadingClustering, setLoadingClustering] = useState(false);
@@ -148,13 +146,6 @@ const Dashboard = () => {
   const [clusterAnalysis, setClusterAnalysis] = useState<ClusterAnalysis | null>(null);
   const [apiStatus, setApiStatus] = useState('disconnected');
   const [showDecisionTreeModal, setShowDecisionTreeModal] = useState(false);
-
-  const tabs = [
-    { id: 'analytics', name: 'Analytics', shortName: 'Analytics', icon: ChartBarIcon },
-    { id: 'models', name: 'ML Models', shortName: 'Models', icon: CpuChipIcon },
-    { id: 'clustering', name: 'Clustering', shortName: 'Clusters', icon: AcademicCapIcon },
-    { id: 'association', name: 'Association Rules', shortName: 'Rules', icon: MapPinIcon },
-  ];
 
   useEffect(() => {
     checkAPIStatus();
@@ -373,7 +364,7 @@ const Dashboard = () => {
             <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
               Accidents by Hour of Day
             </h3>
-            <div className="h-64">
+            <div className="h-64 scrollbar-hide">
               <Bar data={hourlyData} options={{
                 ...commonChartOptions,
                 plugins: {
@@ -388,7 +379,7 @@ const Dashboard = () => {
             <h3 className="text-xl font-semibold mb-4 text-slate-900 dark:text-white">
               Accident Severity Distribution
             </h3>
-            <div className="h-64">
+            <div className="h-64 scrollbar-hide">
               <Doughnut data={severityData} options={{
                 responsive: true,
                 maintainAspectRatio: false,
@@ -793,7 +784,7 @@ const Dashboard = () => {
     // If tree parsing failed or no data, show a simplified version  
     if (!treeData) {
       return (
-        <div className="w-full overflow-x-auto">
+        <div className="w-full overflow-x-auto scrollbar-hide">
           <div className="text-center text-blue-600 dark:text-blue-400 mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <div className="text-lg font-semibold mb-2">📊 Simplified Decision Tree View</div>
             <div className="text-sm">Showing decision path from your trained model</div>
@@ -890,7 +881,7 @@ const Dashboard = () => {
         </div>
         
         {/* Interactive Tree Container with Proper Scrolling */}
-        <div className="relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto overflow-y-visible">
+        <div className="relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-x-auto overflow-y-visible scrollbar-hide">
           <div className="absolute inset-0 opacity-5 pointer-events-none">
             <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(148, 163, 184, 0.3) 1px, transparent 0)', backgroundSize: '20px 20px'}}></div>
           </div>
@@ -1172,7 +1163,7 @@ const Dashboard = () => {
             <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
               Random Forest - Feature Importance
             </h3>
-            <div className="h-80">
+            <div className="h-80 scrollbar-hide">
               <Bar data={rfFeatureImportanceData} options={{
                 ...commonChartOptions,
                 indexAxis: 'y' as const,
@@ -1199,7 +1190,7 @@ const Dashboard = () => {
             <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">
               Decision Tree - Feature Importance
             </h3>
-            <div className="h-80">
+            <div className="h-80 scrollbar-hide">
               <Bar data={dtFeatureImportanceData} options={{
                 ...commonChartOptions,
                 indexAxis: 'y' as const,
@@ -1344,7 +1335,7 @@ const Dashboard = () => {
                           
                           {/* SVG with optimized viewing */}
                           <div 
-                            className="overflow-auto pt-12 pb-4 px-4"
+                            className="overflow-auto pt-12 pb-4 px-4 scrollbar-hide"
                             style={{ maxHeight: '500px' }}
                           >
                             <div 
@@ -1713,41 +1704,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex flex-wrap justify-center lg:justify-center mb-8 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-2 lg:p-3 shadow-lg overflow-hidden">
-          {tabs.map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 lg:px-6 py-2.5 lg:py-3 mx-0.5 lg:mx-1 my-1 rounded-xl font-semibold text-xs sm:text-sm lg:text-base transition-all duration-300 min-w-fit ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white shadow-lg shadow-blue-500/30 border-2 border-blue-400 ring-2 ring-blue-300/50 transform scale-105'
-                  : 'text-slate-700 dark:text-slate-200 bg-slate-50/80 dark:bg-slate-700/50 hover:bg-blue-50 dark:hover:bg-slate-600/80 hover:text-blue-700 dark:hover:text-blue-300 border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-800 hover:shadow-md'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800`}
-              aria-pressed={activeTab === tab.id}
-              role="tab"
-              tabIndex={0}
-            >
-              <tab.icon className={`w-5 h-5 flex-shrink-0 ${activeTab === tab.id ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
-              <span className="font-medium hidden sm:inline">{tab.name}</span>
-              <span className="font-medium sm:hidden">{tab.shortName}</span>
-            </motion.button>
-          ))}
-        </div>
 
-        {/* Current Section Indicator */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center space-x-2 bg-slate-100/70 dark:bg-slate-700/50 px-4 py-2 rounded-full">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
-              Currently viewing: <span className="text-blue-600 dark:text-blue-400 font-semibold">
-                {tabs.find(tab => tab.id === activeTab)?.name}
-              </span>
-            </span>
-          </div>
-        </div>
 
         {/* Tab Content */}
         <motion.div
@@ -1779,7 +1736,7 @@ const Dashboard = () => {
             ) : renderClustering())}
             
             {activeTab === 'association' && (
-              <AssociationRules onBack={() => setActiveTab('analytics')} />
+              <AssociationRules onBack={() => navigate('/dashboard?tab=analytics')} />
             )}
           </>
         </motion.div>
@@ -1803,7 +1760,7 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="p-6 max-h-[70vh] overflow-y-auto scrollbar-hide">
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg">
                 <div className="text-center mb-4">
                   <div className="text-sm font-medium text-blue-700 dark:text-blue-300">

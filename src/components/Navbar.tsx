@@ -40,9 +40,10 @@ const Navbar = () => {
 
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Analytics', href: '#analytics' },
-    { name: 'Insights', href: '#insights' },
+    { name: 'Analytics', href: '/dashboard?tab=analytics' },
+    { name: 'Models', href: '/dashboard?tab=models' },
+    { name: 'Clustering', href: '/dashboard?tab=clustering' },
+    { name: 'Association Rules', href: '/dashboard?tab=association' },
   ]
 
   return (
@@ -64,11 +65,11 @@ const Navbar = () => {
             className="flex items-center space-x-2"
           >
             <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">TA</span>
+              <span className="text-white font-bold text-lg">CI</span>
             </div>
             <div className="flex flex-col">
               <span className="font-display font-bold text-lg text-slate-800 dark:text-slate-200">
-                Traffic Analytics
+                CrashInsights
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400 -mt-1">
                 Chicago Safety Insights
@@ -110,12 +111,7 @@ const Navbar = () => {
             )}
           </motion.button>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
-            <Link to="/dashboard" className="btn-primary">
-              Get Started
-            </Link>
-          </div>
+
 
           {/* Mobile Menu Button */}
           <motion.button
@@ -171,13 +167,7 @@ const Navbar = () => {
                   </>
                 )}
               </button>
-              <Link 
-                to="/dashboard" 
-                className="btn-primary w-full text-center"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Get Started
-              </Link>
+
             </div>
           </div>
         </motion.div>

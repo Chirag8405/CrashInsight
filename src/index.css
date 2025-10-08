@@ -7,14 +7,35 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Hide scrollbars globally */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  html::-webkit-scrollbar {
+    display: none;
   }
   
   body {
     @apply font-sans antialiased bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800;
+    /* Hide body scrollbars */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  body::-webkit-scrollbar {
+    display: none;
   }
   
   * {
     @apply border-slate-200 dark:border-slate-700;
+    /* Hide all scrollbars by default */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  *::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -53,6 +74,13 @@
   
   .chart-container {
     @apply bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-xl border border-white/40 dark:border-slate-700/50 p-6 shadow-xl;
+    /* Hide scrollbars in chart containers */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .chart-container::-webkit-scrollbar {
+    display: none;
   }
   
   .stat-card {

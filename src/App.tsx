@@ -4,7 +4,6 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Features from './components/Features'
 import Dashboard from './components/Dashboard'
-import Footer from './components/Footer'
 
 function App() {
   return (
@@ -25,8 +24,6 @@ function App() {
           } />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
-        
-        <Footer />
       </div>
     </Router>
   )

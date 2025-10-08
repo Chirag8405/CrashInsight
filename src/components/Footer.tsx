@@ -76,7 +76,7 @@ const Footer = () => {
                 <span className="text-white font-bold text-xl">TA</span>
               </div>
               <div>
-                <h3 className="font-display font-bold text-xl">Traffic Analytics</h3>
+                <h3 className="font-display font-bold text-xl">CrashInsights</h3>
                 <p className="text-slate-400 text-sm">Chicago Safety Insights</p>
               </div>
             </div>
@@ -140,7 +140,7 @@ const Footer = () => {
           className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between"
         >
           <p className="text-slate-400 text-sm">
-            © {currentYear} Traffic Analytics. All rights reserved.
+            © {currentYear} CrashInsights. All rights reserved.
           </p>
           
           <div className="flex items-center space-x-6 mt-4 md:mt-0">

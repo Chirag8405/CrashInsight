@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { 
   ShieldCheckIcon, 
-  ArrowRightIcon,
-  PlayIcon 
+  ArrowRightIcon
 } from '@heroicons/react/24/outline'
 
 interface RealStats {
@@ -122,11 +121,6 @@ const Hero = () => {
                   Explore Dashboard
                   <ArrowRightIcon className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                
-                <button className="btn-secondary inline-flex items-center justify-center">
-                  <PlayIcon className="w-5 h-5 mr-2" />
-                  Watch Demo
-                </button>
               </motion.div>
 
               <motion.div variants={itemVariants} className="grid grid-cols-3 gap-6 pt-8">
