@@ -41,15 +41,15 @@
 
 @layer components {
   .glass-card {
-    @apply bg-white/95 backdrop-blur-md border border-white/40 shadow-xl;
+    @apply bg-white/95 backdrop-blur-md border border-slate-200/50 shadow-xl;
   }
   
   .dark .glass-card {
-    @apply bg-slate-800/95 border-slate-700/50;
+    @apply bg-slate-900/95 border-slate-700/50;
   }
   
   .gradient-text {
-    @apply bg-gradient-to-r from-blue-600 via-blue-500 to-purple-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-600 via-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-blue-400 dark:via-blue-300 dark:to-purple-400;
   }
   
   .btn-primary {
@@ -88,11 +88,11 @@
   }
   
   .nav-link {
-    @apply text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300;
+    @apply text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition-colors duration-300;
   }
   
-  .nav-link.active {
-    @apply text-blue-600 dark:text-blue-400;
+  .nav-link-active {
+    @apply text-blue-600 dark:text-blue-400 font-semibold;
   }
 }
 

@@ -2,33 +2,13 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
 import { Bars3Icon, XMarkIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline'
+import { useTheme } from '../contexts/ThemeContext'
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
   const location = useLocation()
-
-  useEffect(() => {
-    // Check for saved dark mode preference or default to false
-    const savedMode = localStorage.getItem('darkMode') === 'true'
-    setIsDarkMode(savedMode)
-    if (savedMode) {
-      document.documentElement.classList.add('dark')
-    }
-  }, [])
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode
-    setIsDarkMode(newMode)
-    localStorage.setItem('darkMode', newMode.toString())
-    
-    if (newMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }
+  const { isDarkMode, toggleDarkMode } = useTheme()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,7 +33,7 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: 'easeOut' }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20 dark:bg-slate-800/80 dark:border-slate-700/20' 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/50 dark:bg-slate-900/95 dark:border-slate-700/50' 
           : 'bg-transparent'
       }`}
     >
@@ -68,10 +48,10 @@ const Navbar = () => {
               <span className="text-white font-bold text-lg">CI</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-display font-bold text-lg text-slate-800 dark:text-slate-200">
+              <span className="font-display font-bold text-lg text-slate-800 dark:text-white">
                 CrashInsights
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400 -mt-1">
+              <span className="text-xs text-slate-600 dark:text-slate-300 -mt-1">
                 Chicago Safety Insights
               </span>
             </div>
@@ -101,7 +81,7 @@ const Navbar = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={toggleDarkMode}
-            className="p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/10 dark:hover:bg-slate-700/10 transition-colors"
+            className="p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-700/50 transition-colors duration-200"
             title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDarkMode ? (
@@ -117,7 +97,7 @@ const Navbar = () => {
           <motion.button
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/10 dark:hover:bg-slate-700/10 transition-colors"
+            className="lg:hidden p-2 rounded-lg text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-700/50 transition-colors duration-200"
           >
             {isMobileMenuOpen ? (
               <XMarkIcon className="w-6 h-6" />
@@ -137,14 +117,14 @@ const Navbar = () => {
           transition={{ duration: 0.3 }}
           className="lg:hidden overflow-hidden"
         >
-          <div className="py-4 space-y-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-lg mt-4 border border-white/20 dark:border-slate-700/20">
+          <div className="py-4 space-y-2 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-lg mt-4 border border-slate-200/50 dark:border-slate-700/50">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 to={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`block px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/20 dark:hover:bg-slate-700/20 transition-colors ${
-                  location.pathname === item.href ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400' : ''
+                className={`block px-4 py-3 rounded-lg text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-700/50 transition-colors duration-200 ${
+                  location.pathname === item.href ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium' : ''
                 }`}
               >
                 {item.name}
@@ -153,7 +133,7 @@ const Navbar = () => {
             <div className="px-4 pt-2 space-y-2">
               <button
                 onClick={toggleDarkMode}
-                className="flex items-center justify-center w-full px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/20 dark:hover:bg-slate-700/20 transition-colors"
+                className="flex items-center justify-center w-full px-4 py-3 rounded-lg text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-700/50 transition-colors duration-200"
               >
                 {isDarkMode ? (
                   <>

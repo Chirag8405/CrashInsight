@@ -129,7 +129,7 @@ interface ClusterAnalysis {
   silhouette_info: string;
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
@@ -312,7 +312,7 @@ const Dashboard = () => {
           <motion.div className="glass-card p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Total Accidents</p>
+                <p className="text-sm text-slate-700 dark:text-slate-200">Total Accidents</p>
                 <p className="text-3xl font-bold text-slate-900 dark:text-white">
                   {basicStats.total_accidents.toLocaleString()}
                 </p>
@@ -324,7 +324,7 @@ const Dashboard = () => {
           <motion.div className="glass-card p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Fatal Accidents</p>
+                <p className="text-sm text-slate-700 dark:text-slate-200">Fatal Accidents</p>
                 <p className="text-3xl font-bold text-red-600 dark:text-red-400">
                   {basicStats.fatal_accidents.toLocaleString()}
                 </p>
@@ -336,7 +336,7 @@ const Dashboard = () => {
           <motion.div className="glass-card p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Injury Accidents</p>
+                <p className="text-sm text-slate-700 dark:text-slate-200">Injury Accidents</p>
                 <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                   {basicStats.injury_accidents.toLocaleString()}
                 </p>
@@ -349,7 +349,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Property Only</p>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                   {basicStats.property_damage_only.toLocaleString()}
                 </p>
               </div>
@@ -1028,18 +1028,25 @@ const Dashboard = () => {
                 <div className="text-xs font-medium text-slate-600 dark:text-slate-400 p-1 flex items-center">
                   {labels[rowIdx]}
                 </div>
-                {row.map((cell, colIdx) => (
-                  <div
-                    key={colIdx}
-                    className="text-xs text-center p-2 rounded border border-slate-200 dark:border-slate-600"
-                    style={{
-                      backgroundColor: `rgba(34, 197, 94, ${cell / maxValue * 0.8})`,
-                      color: cell / maxValue > 0.5 ? 'white' : 'black'
-                    }}
-                  >
-                    {cell}
-                  </div>
-                ))}
+                {row.map((cell, colIdx) => {
+                  const intensity = cell / maxValue;
+                  const isHighIntensity = intensity > 0.5;
+                  return (
+                    <div
+                      key={colIdx}
+                      className={`text-xs text-center p-2 rounded border border-slate-200 dark:border-slate-600 font-medium ${
+                        isHighIntensity 
+                          ? 'text-white dark:text-white' 
+                          : 'text-slate-900 dark:text-slate-100'
+                      }`}
+                      style={{
+                        backgroundColor: `rgba(34, 197, 94, ${intensity * 0.8})`,
+                      }}
+                    >
+                      {cell}
+                    </div>
+                  );
+                })}
               </React.Fragment>
             ))}
           </div>
@@ -1364,17 +1371,38 @@ const Dashboard = () => {
     const getClusterDescription = (cluster: any, index: number) => {
       const avgInjuries = cluster.avg_injuries;
       const hour = cluster.common_hour;
-      const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][cluster.common_day] || 'Unknown';
+      
+      // Function to get specific time range
+      const getTimeRange = (hour: number): string => {
+        if (hour === 0) {
+          return "12:00 AM - 1:00 AM (Midnight)";
+        } else if (hour < 12) {
+          return `${hour}:00 AM - ${hour + 1}:00 AM`;
+        } else if (hour === 12) {
+          return "12:00 PM - 1:00 PM (Noon)";
+        } else {
+          return `${hour - 12}:00 PM - ${hour - 11}:00 PM`;
+        }
+      };
+      
+      // Map what appears to be months (1-12) to month names
+      const months = {
+        1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June',
+        7: 'July', 8: 'August', 9: 'September', 10: 'October', 11: 'November', 12: 'December'
+      };
+      
+      const timePeriod = getTimeRange(hour);
+      const monthName = months[cluster.common_day as keyof typeof months] || `Period ${cluster.common_day}`;
       
       let severityLevel = '';
       let severityColor = '';
       let riskIcon = '';
       
-      if (avgInjuries >= 2) {
+      if (avgInjuries > 0.6) {
         severityLevel = 'High Risk';
         severityColor = 'text-red-600 dark:text-red-400';
         riskIcon = '🚨';
-      } else if (avgInjuries >= 1) {
+      } else if (avgInjuries > 0.3) {
         severityLevel = 'Medium Risk';
         severityColor = 'text-yellow-600 dark:text-yellow-400';
         riskIcon = '⚠️';
@@ -1384,24 +1412,16 @@ const Dashboard = () => {
         riskIcon = '✅';
       }
 
-      let timeDescription = '';
-      if (hour >= 6 && hour < 12) {
-        timeDescription = 'Morning Rush Hours';
-      } else if (hour >= 12 && hour < 18) {
-        timeDescription = 'Afternoon Period';
-      } else if (hour >= 18 && hour < 22) {
-        timeDescription = 'Evening Rush Hours';
-      } else {
-        timeDescription = 'Night/Late Hours';
-      }
+      // Use the corrected time period description
+      const timeDescription = timePeriod;
 
       return {
         title: `Pattern ${index + 1}: ${riskIcon} ${severityLevel}`,
-        description: `This accident pattern typically occurs during ${timeDescription.toLowerCase()} on ${dayName}s`,
+        description: `This accident pattern typically occurs during ${timeDescription.toLowerCase()} in ${monthName}`,
         severityLevel,
         severityColor,
         timeDescription,
-        dayName,
+        dayName: monthName, // Actually representing month, not day
         riskIcon
       };
     };
@@ -1505,20 +1525,20 @@ const Dashboard = () => {
                   <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg">
                     <div className="flex items-center mb-2">
                       <span className="text-lg mr-2">🕐</span>
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Peak Time</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Peak Period</span>
                     </div>
                     <div className="text-slate-900 dark:text-white font-semibold">
-                      {cluster.common_hour}:00
+                      {description.timeDescription}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">
-                      {description.timeDescription}
+                      Time Period {cluster.common_hour}
                     </div>
                   </div>
 
                   <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg">
                     <div className="flex items-center mb-2">
                       <span className="text-lg mr-2">📅</span>
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Peak Day</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Peak Month</span>
                     </div>
                     <div className="text-slate-900 dark:text-white font-semibold">
                       {description.dayName}

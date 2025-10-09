@@ -18,7 +18,7 @@ interface TimeData {
   hourly_distribution: { hour: number; accidents: number }[];
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const Hero = () => {
   const [realStats, setRealStats] = useState<RealStats | null>(null);
@@ -95,18 +95,18 @@ const Hero = () => {
               className="space-y-8"
             >
               <motion.div variants={itemVariants} className="space-y-4">
-                <div className="inline-flex items-center px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-medium border border-primary-100">
+                <div className="inline-flex items-center px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-medium border border-primary-200 dark:bg-primary-900/30 dark:text-primary-300 dark:border-primary-700">
                   <ShieldCheckIcon className="w-4 h-4 mr-2" />
                   Chicago Traffic Safety Analysis
                 </div>
                 
                 <h1 className="text-4xl lg:text-6xl xl:text-7xl font-display font-bold leading-tight">
-                  <span className="text-slate-800">Making Roads</span>
+                  <span className="text-slate-900 dark:text-white">Making Roads</span>
                   <br />
                   <span className="gradient-text">Safer with Data</span>
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-slate-600 leading-relaxed max-w-2xl">
+                <p className="text-xl lg:text-2xl text-slate-700 dark:text-slate-200 leading-relaxed max-w-2xl">
                   Comprehensive analysis of Chicago traffic accidents using advanced 
                   machine learning and data mining techniques to improve road safety 
                   and prevent accidents.
@@ -143,8 +143,8 @@ const Hero = () => {
                       <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center group-hover:shadow-glow transition-all duration-300">
                         <ShieldCheckIcon className="w-6 h-6 text-white" />
                       </div>
-                      <div className="text-2xl font-bold text-slate-800">{stat.value}</div>
-                      <div className="text-sm text-slate-600">{stat.label}</div>
+                      <div className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</div>
+                      <div className="text-sm text-slate-700 dark:text-slate-300">{stat.label}</div>
                     </motion.div>
                   ))
                 )}
@@ -171,7 +171,7 @@ const Hero = () => {
                   <div className="space-y-6">
                     {/* Header */}
                     <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-slate-800">Analytics Overview</h3>
+                      <h3 className="font-semibold text-slate-900 dark:text-white">Analytics Overview</h3>
                       <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
                     </div>
 

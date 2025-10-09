@@ -35,7 +35,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="bg-slate-900 text-white relative overflow-hidden">
+    <footer className="bg-slate-900 dark:bg-slate-950 text-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-full h-full">
@@ -81,7 +81,7 @@ const Footer = () => {
               </div>
             </div>
             
-            <p className="text-slate-300 leading-relaxed mb-8 max-w-md">
+            <p className="text-slate-200 dark:text-slate-100 leading-relaxed mb-8 max-w-md">
               Making Chicago roads safer through advanced data analysis and machine learning. 
               Our platform provides actionable insights for traffic safety improvement.
             </p>
@@ -93,7 +93,7 @@ const Footer = () => {
                   href="#"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-primary-600 transition-all duration-300"
+                  className="w-10 h-10 bg-slate-800 dark:bg-slate-700 rounded-lg flex items-center justify-center text-slate-300 hover:text-white hover:bg-primary-600 dark:hover:bg-primary-500 transition-all duration-300"
                 >
                   <span className="text-sm font-medium">{social[0]}</span>
                 </motion.a>
@@ -118,7 +118,7 @@ const Footer = () => {
                       <li key={link.name}>
                         <Link
                           to={link.href}
-                          className="text-slate-400 hover:text-white transition-colors duration-200"
+                          className="text-slate-300 dark:text-slate-200 hover:text-white transition-colors duration-200"
                         >
                           {link.name}
                         </Link>
@@ -137,20 +137,20 @@ const Footer = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between"
+          className="border-t border-slate-700 dark:border-slate-600 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between"
         >
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-300 dark:text-slate-200 text-sm">
             © {currentYear} CrashInsights. All rights reserved.
           </p>
           
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
-            <Link to="#privacy" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link to="#privacy" className="text-slate-300 dark:text-slate-200 hover:text-white text-sm transition-colors">
               Privacy Policy
             </Link>
-            <Link to="#terms" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link to="#terms" className="text-slate-300 dark:text-slate-200 hover:text-white text-sm transition-colors">
               Terms of Service
             </Link>
-            <Link to="#cookies" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link to="#cookies" className="text-slate-300 dark:text-slate-200 hover:text-white text-sm transition-colors">
               Cookie Policy
             </Link>
           </div>

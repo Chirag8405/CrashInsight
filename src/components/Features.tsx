@@ -85,11 +85,11 @@ const Features = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl lg:text-5xl font-display font-bold mb-6">
-            <span className="text-slate-800 dark:text-slate-200">Powerful Features for</span>
+            <span className="text-slate-900 dark:text-white">Powerful Features for</span>
             <br />
             <span className="gradient-text">Traffic Safety Analysis</span>
           </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-slate-700 dark:text-slate-200 max-w-3xl mx-auto leading-relaxed">
             Leverage cutting-edge technology to analyze traffic patterns, predict accidents, 
             and generate insights that make Chicago roads safer for everyone.
           </p>
@@ -117,11 +117,11 @@ const Features = () => {
                 <feature.icon className="w-7 h-7 text-white" />
               </div>
               
-              <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4 group-hover:text-primary-600 transition-colors">
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                 {feature.title}
               </h3>
               
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-slate-700 dark:text-slate-200 leading-relaxed">
                 {feature.description}
               </p>
               
@@ -159,10 +159,10 @@ const Features = () => {
                   <div className="text-3xl lg:text-4xl font-bold gradient-text">
                     {stat.number}
                   </div>
-                  <div className="font-semibold text-slate-700 dark:text-slate-300">
+                  <div className="font-semibold text-slate-800 dark:text-slate-200">
                     {stat.label}
                   </div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                  <div className="text-sm text-slate-600 dark:text-slate-300">
                     {stat.suffix}
                   </div>
                 </motion.div>

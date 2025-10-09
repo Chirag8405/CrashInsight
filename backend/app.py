@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
+import os
 import pandas as pd
 import numpy as np
 from flask import Flask, jsonify, request
-# from flask_cors import CORS
+from flask_cors import CORS
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
@@ -19,19 +20,42 @@ import warnings
 warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
-# CORS(app)  # Commented out - will handle CORS manually if needed
+
+# Production CORS configuration
+if os.getenv('FLASK_ENV') == 'production':
+    CORS(app, origins=["https://your-frontend-domain.vercel.app", "https://crashinsight.vercel.app"])
+else:
+    CORS(app)  # Allow all origins in development
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    if os.getenv('FLASK_ENV') != 'production':
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
 class TrafficAccidentAnalyzer:
-    def __init__(self, csv_file='traffic_accidents.csv'):
+    def __init__(self, csv_file=None):
         self.df = None
         self.processed_df = None
+        # Try multiple paths for the dataset
+        if csv_file is None:
+            possible_paths = [
+                'traffic_accidents.csv',
+                './traffic_accidents.csv',
+                os.path.join(os.path.dirname(__file__), 'traffic_accidents.csv'),
+                os.getenv('DATASET_PATH', 'traffic_accidents.csv')
+            ]
+            csv_file = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    csv_file = path
+                    break
+            
+            if csv_file is None:
+                raise FileNotFoundError("Dataset file not found. Please ensure traffic_accidents.csv is available.")
+        
         self.load_and_process_data(csv_file)
         
     def load_and_process_data(self, csv_file):
@@ -594,9 +618,6 @@ class TrafficAccidentAnalyzer:
         
         return {'rules': [], 'error': 'No significant association rules found'}
 
-# Initialize analyzer
-analyzer = TrafficAccidentAnalyzer()
-
 @app.route('/api/stats', methods=['GET'])
 def get_basic_stats():
     """Get basic statistics about accidents"""
@@ -643,7 +664,22 @@ def health_check():
         'total_records': len(analyzer.df) if analyzer.df is not None else 0
     })
 
+# Initialize analyzer
+try:
+    analyzer = TrafficAccidentAnalyzer()
+    print(f"Dataset loaded successfully with {len(analyzer.df)} records")
+except Exception as e:
+    print(f"Error loading dataset: {e}")
+    analyzer = None
+
 if __name__ == '__main__':
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_ENV') != 'production'
+    
     print("Starting Traffic Accident Analysis API...")
-    print(f"Dataset loaded with {len(analyzer.df)} records")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    if analyzer:
+        print(f"Dataset loaded with {len(analyzer.df)} records")
+    else:
+        print("Warning: Dataset not loaded properly")
+    
+    app.run(debug=debug, host='0.0.0.0', port=port)
