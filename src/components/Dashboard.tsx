@@ -747,14 +747,14 @@ const Dashboard = () => {
               
               {/* Horizontal Distribution Bar */}
               {node.children.length > 1 && (
-                <div className="absolute top-16 left-1/2 transform -translate-x-1/2" style={{width: `${Math.max(320, (node.children.length - 1) * 200 + 80)}px`}}>
+                <div className="absolute top-16 left-1/2 transform -translate-x-1/2" style={{width: `${Math.max(320, ((node.children?.length || 0) - 1) * 200 + 80)}px`}}>
                   <div className="h-1 bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 rounded-full shadow-lg border border-purple-300 dark:border-purple-700 z-10">
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-indigo-400 to-purple-400 rounded-full animate-pulse opacity-60"></div>
                   </div>
                   
                   {/* Connection Junction Points for Each Child */}
-                  {node.children.map((_: any, index: number) => {
-                    const totalChildren = node.children.length;
+                  {(node.children || []).map((_: any, index: number) => {
+                    const totalChildren = node.children?.length || 0;
                     //const spacing = Math.max(320, (totalChildren - 1) * 200 + 80);
                     const leftPosition = totalChildren === 1 
                       ? '50%' 
@@ -774,7 +774,7 @@ const Dashboard = () => {
               )}
               
               <div className="flex items-start justify-center space-x-8 pt-20">
-                {node.children.map((child: any, index: number) => (
+                {(node.children || []).map((child: any, index: number) => (
                   <div key={index} className="relative">
                     {/* Vertical Drop Line to Each Child */}
                     <div className="absolute -top-20 left-1/2 w-1 h-20 bg-gradient-to-b from-purple-500 to-indigo-500 -translate-x-0.5 rounded-full shadow-lg border border-purple-300 dark:border-purple-700 z-10">
@@ -1042,7 +1042,20 @@ const Dashboard = () => {
 
     // Helper function to render confusion matrix as a heatmap-like display
     const renderConfusionMatrix = (matrix: number[][], labels: string[], modelName: string) => {
-      const maxValue = Math.max(...matrix.flat());
+      if (!matrix || !Array.isArray(matrix) || matrix.length === 0 || !labels || !Array.isArray(labels)) {
+        return (
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">{modelName} Confusion Matrix</h4>
+            <div className="text-center text-slate-600 dark:text-slate-400 py-4">
+              No confusion matrix data available
+            </div>
+          </div>
+        );
+      }
+      
+      const flatMatrix = matrix.flat().filter(val => typeof val === 'number' && !isNaN(val));
+      const maxValue = flatMatrix.length > 0 ? Math.max(...flatMatrix) : 1;
+      
       return (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">{modelName} Confusion Matrix</h4>
@@ -1056,9 +1069,9 @@ const Dashboard = () => {
             {matrix.map((row, rowIdx) => (
               <React.Fragment key={rowIdx}>
                 <div className="text-xs font-medium text-slate-600 dark:text-slate-400 p-1 flex items-center">
-                  {labels[rowIdx]}
+                  {labels[rowIdx] || `Class ${rowIdx}`}
                 </div>
-                {row.map((cell, colIdx) => {
+                {(row || []).map((cell, colIdx) => {
                   const intensity = cell / maxValue;
                   const isHighIntensity = intensity > 0.5;
                   return (
@@ -1523,7 +1536,8 @@ const Dashboard = () => {
 
         {/* Cluster Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {sortedClusters.map(([key, cluster], index) => {
+          {(sortedClusters || []).map(([key, cluster], index) => {
+            if (!cluster) return null;
             const description = getClusterDescription(cluster, index);
             const percentage = cluster.percentage;
             
