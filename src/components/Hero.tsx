@@ -66,14 +66,14 @@ const Hero = () => {
   }
 
   // Derive hourly data for chart
-  const hourlyData = timeData?.hourly_distribution.map(item => item.accidents) || [];
+  const hourlyData = timeData?.hourly_distribution?.map(item => item.accidents) || [];
 
   // Real stats derived from API data
   const stats = realStats ? [
-    { label: 'Total Records', value: realStats.total_accidents.toLocaleString() },
-    { label: 'Fatal Accidents', value: realStats.fatal_accidents.toLocaleString() },
-    { label: 'Injury Cases', value: realStats.injury_accidents.toLocaleString() },
-    { label: 'Property Only', value: realStats.property_damage_only.toLocaleString() },
+    { label: 'Total Records', value: (realStats.total_accidents || 0).toLocaleString() },
+    { label: 'Fatal Accidents', value: (realStats.fatal_accidents || 0).toLocaleString() },
+    { label: 'Injury Cases', value: (realStats.injury_accidents || 0).toLocaleString() },
+    { label: 'Property Only', value: (realStats.property_damage_only || 0).toLocaleString() },
   ] : []
 
   return (
