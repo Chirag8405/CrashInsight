@@ -129,7 +129,8 @@ interface ClusterAnalysis {
   silhouette_info: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.MODE === 'production' ? '/.netlify/functions/api' : 'http://localhost:5000/api');
 
 const Dashboard = () => {
   const [searchParams] = useSearchParams();
@@ -181,12 +182,13 @@ const Dashboard = () => {
       setTimeAnalysis(timeRes.data);
       
       // Create mock data for severity and location analysis since these endpoints don't exist yet
+      const totalAccidents = timeRes.data?.hourly_distribution?.reduce((sum: number, h: any) => sum + (h?.accidents || 0), 0) || 1000;
       const mockSeverityAnalysis = {
         severity_distribution: [
-          { severity: 'No Injury', count: timeRes.data.hourly_distribution.reduce((sum: number, h: any) => sum + h.accidents, 0) * 0.6 },
-          { severity: 'Minor', count: timeRes.data.hourly_distribution.reduce((sum: number, h: any) => sum + h.accidents, 0) * 0.25 },
-          { severity: 'Moderate', count: timeRes.data.hourly_distribution.reduce((sum: number, h: any) => sum + h.accidents, 0) * 0.12 },
-          { severity: 'Severe', count: timeRes.data.hourly_distribution.reduce((sum: number, h: any) => sum + h.accidents, 0) * 0.03 }
+          { severity: 'No Injury', count: Math.round(totalAccidents * 0.6) },
+          { severity: 'Minor', count: Math.round(totalAccidents * 0.25) },
+          { severity: 'Moderate', count: Math.round(totalAccidents * 0.12) },
+          { severity: 'Severe', count: Math.round(totalAccidents * 0.03) }
         ],
         severity_by_weather: {},
         severity_by_lighting: {}
@@ -344,7 +346,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-slate-700 dark:text-slate-200">Total Accidents</p>
                 <p className="text-3xl font-bold text-slate-900 dark:text-white">
-                  {basicStats.total_accidents.toLocaleString()}
+                  {(basicStats.total_accidents || 0).toLocaleString()}
                 </p>
               </div>
               <ExclamationTriangleIcon className="w-12 h-12 text-orange-500" />
@@ -356,7 +358,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-slate-700 dark:text-slate-200">Fatal Accidents</p>
                 <p className="text-3xl font-bold text-red-600 dark:text-red-400">
-                  {basicStats.fatal_accidents.toLocaleString()}
+                  {(basicStats.fatal_accidents || 0).toLocaleString()}
                 </p>
               </div>
               <ExclamationTriangleIcon className="w-12 h-12 text-red-500" />
@@ -368,7 +370,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-slate-700 dark:text-slate-200">Injury Accidents</p>
                 <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-                  {basicStats.injury_accidents.toLocaleString()}
+                  {(basicStats.injury_accidents || 0).toLocaleString()}
                 </p>
               </div>
               <ClockIcon className="w-12 h-12 text-yellow-500" />
@@ -380,7 +382,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-slate-600 dark:text-slate-400">Property Only</p>
                 <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  {basicStats.property_damage_only.toLocaleString()}
+                  {(basicStats.property_damage_only || 0).toLocaleString()}
                 </p>
               </div>
               <CheckCircleIcon className="w-12 h-12 text-green-500" />
@@ -1102,10 +1104,10 @@ const Dashboard = () => {
 
 
     const rfFeatureImportanceData = {
-      labels: Object.keys(mlModel.random_forest.feature_importance).slice(0, 8),
+      labels: mlModel.random_forest?.feature_importance ? Object.keys(mlModel.random_forest.feature_importance).slice(0, 8) : [],
       datasets: [{
         label: 'Random Forest Importance',
-        data: Object.values(mlModel.random_forest.feature_importance).slice(0, 8),
+        data: mlModel.random_forest?.feature_importance ? Object.values(mlModel.random_forest.feature_importance).slice(0, 8) : [],
         backgroundColor: 'rgba(34, 197, 94, 0.8)',
         borderColor: 'rgb(34, 197, 94)',
         borderWidth: 1
@@ -1113,10 +1115,10 @@ const Dashboard = () => {
     };
 
     const dtFeatureImportanceData = {
-      labels: Object.keys(mlModel.decision_tree.feature_importance).slice(0, 8),
+      labels: mlModel.decision_tree?.feature_importance ? Object.keys(mlModel.decision_tree.feature_importance).slice(0, 8) : [],
       datasets: [{
         label: 'Decision Tree Importance',
-        data: Object.values(mlModel.decision_tree.feature_importance).slice(0, 8),
+        data: mlModel.decision_tree?.feature_importance ? Object.values(mlModel.decision_tree.feature_importance).slice(0, 8) : [],
         backgroundColor: 'rgba(59, 130, 246, 0.8)',
         borderColor: 'rgb(59, 130, 246)',
         borderWidth: 1
@@ -1156,7 +1158,7 @@ const Dashboard = () => {
             </div>
           </div>
           <p className="text-sm text-slate-600 dark:text-slate-400 mt-4">
-            Models trained on {mlModel.test_size.toLocaleString()} test samples from Chicago accident data
+            Models trained on {(mlModel.test_size || 0).toLocaleString()} test samples from Chicago accident data
           </p>
         </motion.div>
 
@@ -1490,7 +1492,7 @@ const Dashboard = () => {
             </div>
           </div>
           <p className="text-slate-600 dark:text-slate-400 mb-4">
-            K-Means algorithm identified <strong>{clusterAnalysis.n_clusters} distinct accident patterns</strong> from {clusterAnalysis.total_accidents.toLocaleString()} Chicago traffic accidents. 
+            K-Means algorithm identified <strong>{clusterAnalysis.n_clusters} distinct accident patterns</strong> from {(clusterAnalysis.total_accidents || 0).toLocaleString()} Chicago traffic accidents. 
             Each cluster represents accidents with similar characteristics in timing, conditions, and injury patterns.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -1500,7 +1502,7 @@ const Dashboard = () => {
               <div className="text-xs text-slate-600 dark:text-slate-400">K-Means</div>
             </div>
             <div className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800">
-              <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{clusterAnalysis.total_accidents.toLocaleString()}</div>
+              <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{(clusterAnalysis.total_accidents || 0).toLocaleString()}</div>
               <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Total Accidents</div>
               <div className="text-xs text-slate-600 dark:text-slate-400">Analyzed</div>
             </div>
@@ -1558,7 +1560,7 @@ const Dashboard = () => {
                       {percentage.toFixed(1)}% of accidents
                     </div>
                     <div className="text-xs text-slate-400 dark:text-slate-500">
-                      {cluster.size.toLocaleString()} cases
+                      {(cluster.size || 0).toLocaleString()} cases
                     </div>
                   </div>
                 </div>
@@ -1626,19 +1628,19 @@ const Dashboard = () => {
                       <div className="grid grid-cols-3 gap-2 text-xs">
                         <div className="text-center">
                           <div className="text-green-600 dark:text-green-400 font-semibold">
-                            {cluster.injury_distribution.no_injury.toLocaleString()}
+                            {(cluster.injury_distribution?.no_injury || 0).toLocaleString()}
                           </div>
                           <div className="text-slate-500 dark:text-slate-400">No Injury</div>
                         </div>
                         <div className="text-center">
                           <div className="text-yellow-600 dark:text-yellow-400 font-semibold">
-                            {cluster.injury_distribution.minor.toLocaleString()}
+                            {(cluster.injury_distribution?.minor || 0).toLocaleString()}
                           </div>
                           <div className="text-slate-500 dark:text-slate-400">Minor</div>
                         </div>
                         <div className="text-center">
                           <div className="text-red-600 dark:text-red-400 font-semibold">
-                            {cluster.injury_distribution.serious.toLocaleString()}
+                            {(cluster.injury_distribution?.serious || 0).toLocaleString()}
                           </div>
                           <div className="text-slate-500 dark:text-slate-400">Serious</div>
                         </div>

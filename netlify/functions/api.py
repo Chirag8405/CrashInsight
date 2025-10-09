@@ -296,6 +296,29 @@ def handler(event, context):
             query_params = event.get('queryStringParameters') or {}
             n_clusters = int(query_params.get('clusters', 5))
             result = analyzer_instance.perform_clustering(n_clusters)
+        elif path == '/association-rules':
+            # Get query parameters
+            query_params = event.get('queryStringParameters') or {}
+            min_support = float(query_params.get('min_support', 0.01))
+            # Return sample association rules for now
+            result = {
+                'rules': [
+                    {
+                        'antecedents': ['weather_condition_RAIN'],
+                        'consequents': ['lighting_condition_DARKNESS'],
+                        'support': 0.12,
+                        'confidence': 0.78,
+                        'lift': 1.45
+                    },
+                    {
+                        'antecedents': ['crash_hour_17', 'crash_hour_18'],
+                        'consequents': ['injuries_total_high'],
+                        'support': 0.08,
+                        'confidence': 0.65,
+                        'lift': 2.1
+                    }
+                ]
+            }
         elif path == '/health':
             result = {
                 'status': 'healthy',
