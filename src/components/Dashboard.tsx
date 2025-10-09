@@ -472,7 +472,7 @@ const Dashboard = () => {
               <div className="flex justify-between">
                 <span className="text-slate-600 dark:text-slate-400">Avg Injuries per Accident:</span>
                 <span className="font-semibold text-slate-900 dark:text-white">
-                  {basicStats.avg_injuries_per_accident.toFixed(2)}
+                  {(basicStats.avg_injuries_per_accident || 0).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -1136,14 +1136,14 @@ const Dashboard = () => {
             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
               <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">Random Forest</h4>
               <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {(mlModel.random_forest.accuracy * 100).toFixed(2)}%
+                {((mlModel.random_forest?.accuracy || 0) * 100).toFixed(2)}%
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">Ensemble Learning</div>
             </div>
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <h4 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Decision Tree</h4>
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {(mlModel.decision_tree.accuracy * 100).toFixed(2)}%
+                {((mlModel.decision_tree?.accuracy || 0) * 100).toFixed(2)}%
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">Interpretable Model</div>
             </div>
@@ -1153,7 +1153,7 @@ const Dashboard = () => {
                 {mlModel.model_comparison.better_model}
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
-                +{(mlModel.model_comparison.accuracy_difference * 100).toFixed(2)}% better
+                +{((mlModel.model_comparison?.accuracy_difference || 0) * 100).toFixed(2)}% better
               </div>
             </div>
           </div>
@@ -1173,13 +1173,13 @@ const Dashboard = () => {
               <div className="flex justify-between items-center">
                 <span className="text-slate-600 dark:text-slate-400">Accuracy:</span>
                 <span className="text-xl font-bold text-green-600">
-                  {(mlModel.random_forest.accuracy * 100).toFixed(2)}%
+                  {((mlModel.random_forest?.accuracy || 0) * 100).toFixed(2)}%
                 </span>
               </div>
               <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
                 <div 
                   className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${mlModel.random_forest.accuracy * 100}%` }}
+                  style={{ width: `${(mlModel.random_forest?.accuracy || 0) * 100}%` }}
                 ></div>
               </div>
               {renderConfusionMatrix(mlModel.random_forest.confusion_matrix, mlModel.class_labels, 'Random Forest')}
@@ -1195,13 +1195,13 @@ const Dashboard = () => {
               <div className="flex justify-between items-center">
                 <span className="text-slate-600 dark:text-slate-400">Accuracy:</span>
                 <span className="text-xl font-bold text-blue-600">
-                  {(mlModel.decision_tree.accuracy * 100).toFixed(2)}%
+                  {((mlModel.decision_tree?.accuracy || 0) * 100).toFixed(2)}%
                 </span>
               </div>
               <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${mlModel.decision_tree.accuracy * 100}%` }}
+                  style={{ width: `${(mlModel.decision_tree?.accuracy || 0) * 100}%` }}
                 ></div>
               </div>
               {renderConfusionMatrix(mlModel.decision_tree.confusion_matrix, mlModel.class_labels, 'Decision Tree')}
@@ -1325,7 +1325,7 @@ const Dashboard = () => {
                   }
 
                   // Check if we have the graphviz tree visualization
-                  if (mlModel.model_structures.decision_tree_graphviz && mlModel.model_structures.decision_tree_graphviz.svg_data) {
+                  if (mlModel.model_structures?.decision_tree_graphviz?.svg_data) {
                     const graphvizData = mlModel.model_structures.decision_tree_graphviz;
                     
                     if (graphvizData.error) {
@@ -1414,8 +1414,16 @@ const Dashboard = () => {
 
     // Helper function to get cluster description
     const getClusterDescription = (cluster: any, index: number) => {
-      const avgInjuries = cluster.avg_injuries;
-      const hour = cluster.common_hour;
+      if (!cluster) {
+        return {
+          title: `Pattern ${index + 1}`,
+          description: 'Accident pattern data unavailable',
+          severityColor: 'text-gray-600 dark:text-gray-400'
+        };
+      }
+      
+      const avgInjuries = cluster.avg_injuries || 0;
+      const hour = cluster.common_hour || 12;
       
       // Function to get specific time range
       const getTimeRange = (hour: number): string => {
@@ -1437,7 +1445,7 @@ const Dashboard = () => {
       };
       
       const timePeriod = getTimeRange(hour);
-      const monthName = months[cluster.common_day as keyof typeof months] || `Period ${cluster.common_day}`;
+      const monthName = months[(cluster.common_day || 1) as keyof typeof months] || `Period ${cluster.common_day || 'Unknown'}`;
       
       let severityLevel = '';
       let severityColor = '';
@@ -1557,7 +1565,7 @@ const Dashboard = () => {
                   </h4>
                   <div className="text-right">
                     <div className="text-sm text-slate-500 dark:text-slate-400">
-                      {percentage.toFixed(1)}% of accidents
+                      {(percentage || 0).toFixed(1)}% of accidents
                     </div>
                     <div className="text-xs text-slate-400 dark:text-slate-500">
                       {(cluster.size || 0).toLocaleString()} cases
@@ -1605,16 +1613,16 @@ const Dashboard = () => {
                         Average Injuries per Accident
                       </span>
                       <span className={`text-lg font-bold ${description.severityColor}`}>
-                        {cluster.avg_injuries.toFixed(2)}
+                        {(cluster.avg_injuries || 0).toFixed(2)}
                       </span>
                     </div>
                     <div className="mt-2 bg-white dark:bg-slate-800 rounded-full h-2">
                       <div 
                         className={`h-2 rounded-full transition-all duration-500 ${
-                          cluster.avg_injuries >= 2 ? 'bg-red-500' :
-                          cluster.avg_injuries >= 1 ? 'bg-yellow-500' : 'bg-green-500'
+                          (cluster.avg_injuries || 0) >= 2 ? 'bg-red-500' :
+                          (cluster.avg_injuries || 0) >= 1 ? 'bg-yellow-500' : 'bg-green-500'
                         }`}
-                        style={{ width: `${Math.min(cluster.avg_injuries / 3 * 100, 100)}%` }}
+                        style={{ width: `${Math.min((cluster.avg_injuries || 0) / 3 * 100, 100)}%` }}
                       ></div>
                     </div>
                   </div>
@@ -1663,7 +1671,7 @@ const Dashboard = () => {
               <h4 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Most Dangerous Pattern</h4>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 {sortedClusters.length > 0 
-                  ? `${getClusterDescription(sortedClusters[0][1], 0).title} shows the highest injury rate with ${sortedClusters[0][1].avg_injuries.toFixed(2)} injuries per accident.`
+                  ? `${getClusterDescription(sortedClusters[0][1], 0).title} shows the highest injury rate with ${(sortedClusters[0][1].avg_injuries || 0).toFixed(2)} injuries per accident.`
                   : 'Analyzing patterns in accident data...'
                 }
               </p>
@@ -1672,7 +1680,7 @@ const Dashboard = () => {
               <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">Safest Pattern</h4>
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 {sortedClusters.length > 0 
-                  ? `${getClusterDescription(sortedClusters[sortedClusters.length - 1][1], sortedClusters.length - 1).title} has the lowest injury rate with ${sortedClusters[sortedClusters.length - 1][1].avg_injuries.toFixed(2)} injuries per accident.`
+                  ? `${getClusterDescription(sortedClusters[sortedClusters.length - 1][1], sortedClusters.length - 1).title} has the lowest injury rate with ${(sortedClusters[sortedClusters.length - 1][1].avg_injuries || 0).toFixed(2)} injuries per accident.`
                   : 'Identifying safest patterns...'
                 }
               </p>
@@ -1761,7 +1769,7 @@ const Dashboard = () => {
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg">
                 <div className="text-center mb-4">
                   <div className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                    Full Decision Tree from Training Data ({(mlModel.decision_tree.accuracy * 100).toFixed(1)}% Accuracy)
+                    Full Decision Tree from Training Data ({((mlModel.decision_tree?.accuracy || 0) * 100).toFixed(1)}% Accuracy)
                   </div>
                 </div>
                 {(() => {

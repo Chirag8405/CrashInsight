@@ -288,28 +288,28 @@ const AssociationRules: React.FC<AssociationRulesProps> = ({ onBack }) => {
                       <div className="text-center">
                         <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Support</div>
                         <div className="text-lg font-semibold text-slate-900 dark:text-white">
-                          {(rule.support * 100).toFixed(2)}%
+                          {((rule.support || 0) * 100).toFixed(2)}%
                         </div>
                       </div>
                       <div className="text-center">
                         <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Confidence</div>
-                        <div className={`text-lg font-semibold px-2 py-1 rounded ${getConfidenceColor(rule.confidence)}`}>
-                          {(rule.confidence * 100).toFixed(1)}%
+                        <div className={`text-lg font-semibold px-2 py-1 rounded ${getConfidenceColor(rule.confidence || 0)}`}>
+                          {((rule.confidence || 0) * 100).toFixed(1)}%
                         </div>
                       </div>
                       <div className="text-center">
                         <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">Lift</div>
-                        <div className={`text-lg font-semibold px-2 py-1 rounded ${getLiftColor(rule.lift)}`}>
-                          {rule.lift.toFixed(2)}x
+                        <div className={`text-lg font-semibold px-2 py-1 rounded ${getLiftColor(rule.lift || 0)}`}>
+                          {(rule.lift || 0).toFixed(2)}x
                         </div>
                       </div>
                     </div>
 
                     <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg">
                       <p className="text-sm text-slate-700 dark:text-slate-300">
-                        <strong>Interpretation:</strong> When {rule.antecedents.join(' AND ')} occurs, 
-                        there's a {(rule.confidence * 100).toFixed(1)}% chance that {rule.consequents.join(' AND ')} will also occur. 
-                        This is {rule.lift.toFixed(2)}x more likely than random chance.
+                        <strong>Interpretation:</strong> When {(rule.antecedents || []).join(' AND ')} occurs, 
+                        there's a {((rule.confidence || 0) * 100).toFixed(1)}% chance that {(rule.consequents || []).join(' AND ')} will also occur. 
+                        This is {(rule.lift || 0).toFixed(2)}x more likely than random chance.
                       </p>
                     </div>
                   </motion.div>
