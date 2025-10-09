@@ -725,7 +725,7 @@ const Dashboard = () => {
                   {/* Connection Junction Points for Each Child */}
                   {node.children.map((_: any, index: number) => {
                     const totalChildren = node.children.length;
-                    const spacing = Math.max(320, (totalChildren - 1) * 200 + 80);
+                    //const spacing = Math.max(320, (totalChildren - 1) * 200 + 80);
                     const leftPosition = totalChildren === 1 
                       ? '50%' 
                       : `${(index / (totalChildren - 1)) * 100}%`;
@@ -1223,20 +1223,7 @@ const Dashboard = () => {
               {/* Tree visualization */}
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg">
                 <div className="text-center mb-4">
-                  <div className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
-                    Actual Decision Tree from Training Data
                   </div>
-                  <button
-                    onClick={() => {
-                      console.log('Refreshing ML data...');
-                      setMLModel(null);
-                      setTimeout(() => loadMLData(), 100);
-                    }}
-                    className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs transition-colors"
-                  >
-                    🔄 Refresh Data
-                  </button>
-                </div>
 
                 {/* Render actual decision tree */}
                 {(() => {
@@ -1307,7 +1294,6 @@ const Dashboard = () => {
                         <div className="bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 text-white p-6 rounded-t-lg mb-4 shadow-lg">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                              <div className="text-3xl">🌲</div>
                               <div>
                                 <h4 className="font-bold text-xl mb-1">AI Traffic Safety Decision Tree</h4>
                                 <p className="text-white/90 text-sm mb-2">Optimized Balance: All severity classes in compact visualization</p>
@@ -1354,60 +1340,6 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </div>
-                        
-                        {/* Enhanced Tree legend and info */}
-                        <div className="mt-6 space-y-4">
-                          {/* Injury Severity Legend */}
-                          <div className="bg-gradient-to-r from-red-50 to-green-50 dark:from-red-900/10 dark:to-green-900/10 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
-                            <h5 className="font-bold text-gray-800 dark:text-gray-200 mb-3 text-center">Injury Severity Outcomes</h5>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                              <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded text-center border-2 border-red-200 dark:border-red-700">
-                                <div className="font-bold text-red-700 dark:text-red-300 text-lg">FATAL</div>
-                                <div className="text-red-600 dark:text-red-400 text-xs">Life Lost</div>
-                              </div>
-                              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded text-center border-2 border-orange-200 dark:border-orange-700">
-                                <div className="font-bold text-orange-700 dark:text-orange-300 text-lg">SERIOUS</div>
-                                <div className="text-orange-600 dark:text-orange-400 text-xs">Incapacitating</div>
-                              </div>
-                              <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded text-center border-2 border-yellow-200 dark:border-yellow-700">
-                                <div className="font-bold text-yellow-700 dark:text-yellow-300 text-lg">MINOR</div>
-                                <div className="text-yellow-600 dark:text-yellow-400 text-xs">Non-incapacitating</div>
-                              </div>
-                              <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded text-center border-2 border-green-200 dark:border-green-700">
-                                <div className="font-bold text-green-700 dark:text-green-300 text-lg">NO INJURY</div>
-                                <div className="text-green-600 dark:text-green-400 text-xs">Property Only</div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Decision Factors */}
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-                              <h5 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">� Primary Factors</h5>
-                              <div className="space-y-2 text-blue-600 dark:text-blue-400">
-                                <div>• <strong>Collision Type:</strong> Rear-end, angle, sideswipe severity</div>
-                                <div>• <strong>Vehicle Count:</strong> Single vs multi-vehicle risk</div>
-                                <div>• <strong>Primary Cause:</strong> Driver error, road conditions</div>
-                              </div>
-                            </div>
-                            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-lg border border-emerald-200 dark:border-emerald-700">
-                              <h5 className="font-semibold text-emerald-700 dark:text-emerald-300 mb-3">Optimized Structure</h5>
-                              <div className="space-y-2 text-emerald-600 dark:text-emerald-400">
-                                <div>• <strong>Perfect Alignment:</strong> Mathematically precise connections</div>
-                                <div>• <strong>Professional Layout:</strong> Industry-standard visualization</div>
-                                <div>• <strong>Clear Hierarchy:</strong> Easy path tracing</div>
-                              </div>
-                            </div>
-                            <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-200 dark:border-purple-700">
-                              <h5 className="font-semibold text-purple-700 dark:text-purple-300 mb-3">Model Performance</h5>
-                              <div className="space-y-2 text-purple-600 dark:text-purple-400">
-                                <div>• <strong>Balanced Model:</strong> Predicts all 4 severity levels</div>
-                                <div>• <strong>Class Weights:</strong> Handles severe accident prediction</div>
-                                <div>• <strong>Real Impact:</strong> Fatal & serious injury detection</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     );
                   }
@@ -1416,15 +1348,6 @@ const Dashboard = () => {
                   const treeData = mlModel.model_structures.decision_tree_full || mlModel.model_structures.decision_tree_rules;
                   return renderDecisionTreeNode(treeData, 10);
                 })()}
-
-                <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1 mt-4 border-t border-blue-200 dark:border-blue-700 pt-4">
-                  <div>• Complete Decision Tree Structure with All Branches</div>
-                  <div>• Tree trained on 80% of Chicago traffic accident records</div>
-                  <div>• Each branch represents actual decision logic from traffic conditions</div>
-                  <div>• Accuracy: {(mlModel.decision_tree.accuracy * 100).toFixed(1)}%</div>
-                  <div>• Features: Collision type, vehicle count, contributing causes, and more</div>
-                  <div>• Predicts: {mlModel.class_labels ? mlModel.class_labels.join(', ') : 'Injury severity levels'}</div>
-                </div>
               </div>
             </div>
           </motion.div>
