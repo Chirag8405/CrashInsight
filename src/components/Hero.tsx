@@ -187,10 +187,10 @@ const Hero = () => {
                                 style={{ width: '8px', height: `${Math.random() * 60 + 20}%` }}
                               />
                             ))
-                          ) : (
+                          ) : hourlyData.length > 0 ? (
                             hourlyData.slice(0, 7).map((count: number, i: number) => {
-                              const maxCount = Math.max(...hourlyData);
-                              const height = (count / maxCount) * 100;
+                              const maxCount = Math.max(...hourlyData) || 1; // Prevent division by zero
+                              const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
                               return (
                                 <motion.div
                                   key={i}
@@ -203,6 +203,9 @@ const Hero = () => {
                                 />
                               );
                             })
+                          ) : (
+                            // Show placeholder when no data
+                            <div className="text-slate-400 text-sm">Loading chart data...</div>
                           )}
                         </div>
                       </div>
