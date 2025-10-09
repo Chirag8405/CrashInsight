@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report, accuracy_score, confusion_mat
 import graphviz
 import base64
 from io import StringIO
-from mlxtend.frequent_patterns import apriori, association_rules  # Not available
+from mlxtend.frequent_patterns import apriori, association_rules  
 import json
 from datetime import datetime
 import warnings
@@ -183,19 +183,32 @@ class TrafficAccidentAnalyzer:
     
     def perform_clustering(self, n_clusters=5):
         """Perform K-means clustering on accident data"""
-        # Select features for clustering
-        feature_cols = [col for col in self.processed_df.columns if col.endswith('_encoded')]
-        feature_cols.extend(['crash_hour', 'crash_day_of_week', 'crash_month', 'injuries_total'])
+        # Select key features for more balanced clustering
+        important_encoded_cols = [col for col in self.processed_df.columns if any(key in col for key in [
+            'weather_condition_encoded', 'lighting_condition_encoded', 'first_crash_type_encoded',
+            'traffic_control_device_encoded', 'roadway_surface_cond_encoded'
+        ])]
+        
+        # Add temporal and injury features (note: data appears to have hour periods 1-7, days 1-12)
+        feature_cols = important_encoded_cols + ['crash_hour', 'crash_day_of_week', 'crash_month', 'injuries_total']
         
         # Remove rows with NaN values in feature columns
         cluster_df = self.processed_df[feature_cols].dropna()
+        
+        print(f"Clustering with features: {feature_cols}")
+        print(f"Data shape for clustering: {cluster_df.shape}")
+        
+        
+        # Sample data if too large to ensure diverse patterns
+        if len(cluster_df) > 50000:
+            cluster_df = cluster_df.sample(n=50000, random_state=42)
         
         # Standardize features
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(cluster_df)
         
-        # Perform K-means clustering
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        # Perform K-means clustering with multiple initializations
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=20, max_iter=500)
         clusters = kmeans.fit_predict(X_scaled)
         
         # Enhanced cluster analysis with more insights
@@ -213,21 +226,49 @@ class TrafficAccidentAnalyzer:
                 'serious': len(cluster_data[cluster_data['injuries_total'] > 2])
             }
             
-            # Find most common accident characteristics
-            weather_col = [col for col in cluster_data.columns if 'weather' in col and col.endswith('_encoded')]
-            lighting_col = [col for col in cluster_data.columns if 'lighting' in col and col.endswith('_encoded')]
-            crash_type_col = [col for col in cluster_data.columns if 'first_crash_type' in col and col.endswith('_encoded')]
+            # Find most common accident characteristics - get actual mode for THIS cluster
+            cluster_hour_mode = cluster_data['crash_hour'].mode()
+            cluster_day_mode = cluster_data['crash_day_of_week'].mode()
+            cluster_month_mode = cluster_data['crash_month'].mode()
+            
+            # Get more diverse time patterns by checking distribution
+            hour_dist = cluster_data['crash_hour'].value_counts()
+            day_dist = cluster_data['crash_day_of_week'].value_counts()
+            
+            # Map 24-hour time to specific time ranges
+            def get_time_range(hour):
+                if hour == 0:
+                    return "12:00 AM - 1:00 AM (Midnight)"
+                elif hour < 12:
+                    return f"{hour}:00 AM - {hour + 1}:00 AM"
+                elif hour == 12:
+                    return "12:00 PM - 1:00 PM (Noon)"
+                else:
+                    return f"{hour - 12}:00 PM - {hour - 11}:00 PM"
+            
+            # The 'day_of_week' column might actually be months (1-12) based on data analysis
+            month_map = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June',
+                        7: 'July', 8: 'August', 9: 'September', 10: 'October', 11: 'November', 12: 'December'}
+            
+            
+            primary_hour = int(cluster_hour_mode.iloc[0]) if len(cluster_hour_mode) > 0 else int(hour_dist.index[0])
+            primary_period = int(cluster_day_mode.iloc[0]) if len(cluster_day_mode) > 0 else int(day_dist.index[0])
             
             cluster_analysis[f'cluster_{i}'] = {
                 'size': len(cluster_data),
                 'percentage': round((len(cluster_data) / total_accidents) * 100, 1),
                 'avg_injuries': round(float(cluster_data['injuries_total'].mean()), 2),
                 'injury_distribution': injury_dist,
-                'common_hour': int(cluster_data['crash_hour'].mode()[0]) if not cluster_data['crash_hour'].mode().empty else 0,
-                'common_day': int(cluster_data['crash_day_of_week'].mode()[0]) if not cluster_data['crash_day_of_week'].mode().empty else 0,
-                'common_month': int(cluster_data['crash_month'].mode()[0]) if not cluster_data['crash_month'].mode().empty else 1,
-                'risk_level': 'High' if cluster_data['injuries_total'].mean() > 1.0 else 'Medium' if cluster_data['injuries_total'].mean() > 0.5 else 'Low',
-                'cluster_label': f"Cluster {i}" # Will be enhanced based on characteristics
+                'common_hour': primary_hour,
+                'common_day': primary_period,  # This might actually be month
+                'common_month': int(cluster_month_mode.iloc[0]) if len(cluster_month_mode) > 0 else 1,
+                'risk_level': 'High' if cluster_data['injuries_total'].mean() > 0.6 else 'Medium' if cluster_data['injuries_total'].mean() > 0.3 else 'Low',
+                'cluster_label': f"Cluster {i}",
+                'hour_description': get_time_range(primary_hour),
+                'period_description': month_map.get(primary_period, f'Period {primary_period}'),
+                # Add additional insights for debugging
+                'hour_distribution': hour_dist.head(3).to_dict(),
+                'day_distribution': day_dist.to_dict()
             }
         
         # Calculate clustering quality metrics
