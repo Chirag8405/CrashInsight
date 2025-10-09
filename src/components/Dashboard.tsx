@@ -1061,7 +1061,7 @@ const Dashboard = () => {
       return (
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">{modelName} Confusion Matrix</h4>
-          <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${labels.length + 1}, minmax(0, 1fr))` }}>
+          <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${(labels?.length || 0) + 1}, minmax(0, 1fr))` }}>
             <div></div>
             {labels.map((label, idx) => (
               <div key={idx} className="text-xs text-center font-medium text-slate-600 dark:text-slate-400 p-1">
@@ -1150,7 +1150,7 @@ const Dashboard = () => {
             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
               <h4 className="font-medium text-purple-700 dark:text-purple-300 mb-2">Best Model</h4>
               <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                {mlModel.model_comparison.better_model}
+                {mlModel.model_comparison?.better_model || 'Random Forest'}
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400">
                 +{((mlModel.model_comparison?.accuracy_difference || 0) * 100).toFixed(2)}% better
