@@ -1646,13 +1646,19 @@ const Dashboard = () => {
             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
               <h4 className="font-medium text-blue-700 dark:text-blue-300 mb-2">Most Dangerous Pattern</h4>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                {getClusterDescription(sortedClusters[0][1], 0).title} shows the highest injury rate with {sortedClusters[0][1].avg_injuries.toFixed(2)} injuries per accident.
+                {sortedClusters.length > 0 
+                  ? `${getClusterDescription(sortedClusters[0][1], 0).title} shows the highest injury rate with ${sortedClusters[0][1].avg_injuries.toFixed(2)} injuries per accident.`
+                  : 'Analyzing patterns in accident data...'
+                }
               </p>
             </div>
             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
               <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">Safest Pattern</h4>
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                {getClusterDescription(sortedClusters[sortedClusters.length - 1][1], sortedClusters.length - 1).title} has the lowest injury rate with {sortedClusters[sortedClusters.length - 1][1].avg_injuries.toFixed(2)} injuries per accident.
+                {sortedClusters.length > 0 
+                  ? `${getClusterDescription(sortedClusters[sortedClusters.length - 1][1], sortedClusters.length - 1).title} has the lowest injury rate with ${sortedClusters[sortedClusters.length - 1][1].avg_injuries.toFixed(2)} injuries per accident.`
+                  : 'Identifying safest patterns...'
+                }
               </p>
             </div>
           </div>
