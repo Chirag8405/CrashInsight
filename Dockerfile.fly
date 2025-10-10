@@ -1,4 +1,4 @@
-# Multi-stage Docker build for CrashInsight
+# Fly.io optimized Dockerfile for CrashInsight with full ML stack
 # Stage 1: Build React frontend
 FROM node:20-alpine AS frontend-build
 
@@ -12,39 +12,37 @@ COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY eslint.config.js ./
 
-# Install dependencies with memory optimization
-RUN npm install --no-audit --no-fund
+# Install dependencies
+RUN npm install
 
 # Copy frontend source
 COPY src/ ./src/
 COPY public/ ./public/
 COPY index.html ./
 
-# Build frontend for production with memory limits
-RUN NODE_OPTIONS="--max-old-space-size=480" npm run build
+# Build frontend for production
+RUN npm run build
 
-# Stage 2: Python backend with static files
+# Stage 2: Python backend with full ML stack
 FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for Python packages (optimized for memory)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies for Python packages
+RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
     graphviz \
     graphviz-dev \
     pkg-config \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/apt/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy backend requirements (full ML stack)
+# Copy backend requirements (FULL ML STACK)
 COPY backend/requirements.txt ./
 
-# Install Python dependencies with memory optimization
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code
@@ -59,14 +57,14 @@ RUN mkdir -p logs
 # Set environment variables
 ENV FLASK_ENV=production
 ENV FLASK_APP=app.py
-ENV PORT=10000
+ENV PORT=8080
 
-# Expose port
-EXPOSE 10000
+# Expose port (Fly.io uses 8080)
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:10000/api/health || exit 1
+    CMD curl -f http://localhost:8080/api/health || exit 1
 
 # Start the application
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "--workers", "2", "--threads", "4", "--timeout", "120", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--threads", "4", "--timeout", "120", "app:app"]
