@@ -87,10 +87,10 @@ python app.py
 ## 🚀 Production Deployment
 
 This application is designed for deployment with:
-- **Backend**: Railway (Python Flask with dataset)
+- **Backend**: Render.com (Python Flask with dataset)
 - **Frontend**: Netlify (React build)
 
-See [RAILWAY_NETLIFY_DEPLOYMENT.md](RAILWAY_NETLIFY_DEPLOYMENT.md) for detailed deployment instructions.
+See [RENDER_NETLIFY_DEPLOYMENT.md](RENDER_NETLIFY_DEPLOYMENT.md) for detailed deployment instructions.
 
 ## 📁 Project Structure
 

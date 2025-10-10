@@ -75,7 +75,7 @@ instance/
 .env.test.local
 .env.production.local
 
-# Railway
+# Deployment
 .railway
 railway.json
 

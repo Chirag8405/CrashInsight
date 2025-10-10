@@ -1,55 +1,54 @@
-# Railway + Netlify Deployment Guide
+# Render + Netlify Deployment Guide
 
 This guide explains how to deploy your CrashInsight application with:
-- **Backend**: Railway (Python Flask with dataset)
+- **Backend**: Render.com (Python Flask with dataset)
 - **Frontend**: Netlify (React TypeScript)
 
-## 🚀 Backend Deployment (Railway)
+## 🚀 Backend Deployment (Render.com)
 
 ### Prerequisites
-1. Create a free account at [railway.app](https://railway.app)
-2. Install Railway CLI: `npm install -g @railway/cli`
-3. Login: `railway login`
+1. Create a free account at [render.com](https://render.com)
+2. Connect your GitHub repository to Render
 
-### Step 1: Deploy Backend to Railway
+### Step 1: Deploy Backend to Render
 
-1. **Navigate to backend directory:**
-   ```bash
-   cd backend/
+1. **Go to Render Dashboard:**
+   - Visit [dashboard.render.com](https://dashboard.render.com)
+   - Click "New +" → "Web Service"
+
+2. **Connect Repository:**
+   - Connect your GitHub account
+   - Select your CrashInsight repository
+   - Choose the `backend` directory as root directory
+
+3. **Configure Service:**
+   ```
+   Name: crashinsight-backend
+   Environment: Python 3
+   Build Command: pip install -r requirements.txt
+   Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
    ```
 
-2. **Initialize Railway project:**
-   ```bash
-   railway init
-   # Follow prompts to create new project
+4. **Set Environment Variables:**
+   ```
+   FLASK_ENV=production
+   PYTHON_VERSION=3.11.0
    ```
 
-3. **Deploy the backend:**
-   ```bash
-   railway up
-   ```
-
-4. **Set environment variables (if needed):**
-   ```bash
-   railway variables set FLASK_ENV=production
-   ```
-
-5. **Get your Railway URL:**
-   ```bash
-   railway domain
-   # This will show your app URL like: https://your-app-name.railway.app
-   ```
+5. **Deploy:**
+   - Click "Create Web Service"
+   - Render will automatically build and deploy your backend
 
 ### Step 2: Backend Configuration
 
 Your backend is already configured with:
-- ✅ `requirements.txt` - Python dependencies
-- ✅ `Procfile` - Railway deployment config
+- ✅ `requirements.txt` - Python dependencies with specific versions
+- ✅ `Procfile` - Render deployment config
+- ✅ `render.yaml` - Render configuration
 - ✅ `app.py` - Flask application with CORS
-- ✅ `traffic_accidents.csv` - Dataset
-- ✅ `railway.toml` - Railway configuration
+- ✅ `traffic_accidents.csv` - Dataset (49MB supported on Render free tier)
 
-The backend will be available at: `https://your-app-name.railway.app`
+The backend will be available at: `https://your-service-name.onrender.com`
 
 ## 🌐 Frontend Deployment (Netlify)
 
@@ -65,9 +64,9 @@ The backend will be available at: `https://your-app-name.railway.app`
    cp .env.example .env.production
    ```
 
-2. **Update `.env.production` with your Railway URL:**
+2. **Update `.env.production` with your Render URL:**
    ```bash
-   VITE_API_BASE_URL=https://your-app-name.railway.app/api
+   VITE_API_BASE_URL=https://your-service-name.onrender.com/api
    ```
 
 ### Step 2: Deploy to Netlify
@@ -79,11 +78,9 @@ The backend will be available at: `https://your-app-name.railway.app`
    - Set build settings:
      - **Build command**: `npm run build`
      - **Publish directory**: `dist`
-   - Add environment variable:
+     - Add environment variable:
      - **Key**: `VITE_API_BASE_URL`
-     - **Value**: `https://your-app-name.railway.app/api`
-
-2. **Via Netlify CLI:**
+     - **Value**: `https://your-service-name.onrender.com/api`2. **Via Netlify CLI:**
    ```bash
    npm install -g netlify-cli
    netlify init

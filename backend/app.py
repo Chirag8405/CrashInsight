@@ -22,7 +22,7 @@ warnings.filterwarnings('ignore')
 app = Flask(__name__)
 
 # Production CORS configuration
-if os.getenv('FLASK_ENV') == 'production':
+if os.getenv('RENDER') or os.getenv('FLASK_ENV') == 'production':
     # Add your Netlify domain here
     CORS(app, origins=["https://*.netlify.app", "https://crashinsight.netlify.app"])
 else:
