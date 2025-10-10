@@ -3,12 +3,10 @@
 # This file should be placed in your backend directory
 # Railway will automatically detect and deploy your Flask app
 
-[build]
-builder = "python"
-
 [variables]
 FLASK_ENV = "production"
 DATASET_PATH = "./traffic_accidents.csv"
 
 [deploy]
-checkPath = "/api/health"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300

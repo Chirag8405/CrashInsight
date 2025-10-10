@@ -19,7 +19,7 @@ interface TimeData {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.MODE === 'production' ? 'https://your-backend-url.railway.app/api' : 'http://localhost:5000/api');
+  (import.meta.env.MODE === 'production' ? 'https://crashinsights-production.up.railway.app/api' : 'http://localhost:5000/api');
 
 const Hero = () => {
   const [realStats, setRealStats] = useState<RealStats | null>(null);
