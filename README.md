@@ -1,8 +1,59 @@
-# CrashInsight 🚗📊
+# CrashInsight - AI-Powered Traffic Accident Analytics 🚗📊
 
-**AI-Powered Traffic Accident Analytics Platform**
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
+[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-CrashInsight is a comprehensive data analytics platform that leverages machine learning to analyze traffic accident patterns, predict crash outcomes, and provide actionable safety insights. Built with React + TypeScript frontend and Python Flask backend.
+**CrashInsight** is an advanced web application that leverages artificial intelligence and machine learning to analyze traffic accident data, providing actionable insights for improving road safety.
+
+## 🚀 Local Development Setup
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- npm or yarn
+
+### Backend Setup
+```bash
+# Navigate to backend directory
+cd backend
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Run the Flask server
+python app.py
+```
+Backend will be available at: http://localhost:5000
+
+### Frontend Setup
+```bash
+# Navigate to project root
+cd ..
+
+# Install Node.js dependencies
+npm install
+
+# Start the development server
+npm run dev:vite
+```
+Frontend will be available at: http://localhost:5173
+
+### Full Development Environment
+1. Start backend: `cd backend && python app.py`
+2. Start frontend: `npm run dev:vite`
+3. Open http://localhost:5173 in your browser
 
 ## 🌟 Features
 
