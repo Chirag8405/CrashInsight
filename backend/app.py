@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 import numpy as np
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from flask_cors import CORS
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
@@ -31,14 +31,10 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='')
 
-# Production CORS configuration
-if os.getenv('RENDER') or os.getenv('FLASK_ENV') == 'production':
-    # Add your Netlify domain here
-    CORS(app, origins=["https://*.netlify.app", "https://crashinsight.netlify.app"])
-else:
-    CORS(app)  # Allow all origins in development
+# Production CORS configuration - simplified for Docker deployment
+CORS(app)
 
 @app.after_request
 def after_request(response):
@@ -704,6 +700,21 @@ def health_check():
         'data_loaded': analyzer.df is not None,
         'total_records': len(analyzer.df) if analyzer.df is not None else 0
     })
+
+# Frontend serving routes
+@app.route('/')
+def serve_frontend():
+    """Serve the React app's index.html"""
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static_files(path):
+    """Serve static files or fallback to React app for SPA routing"""
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    else:
+        # For React Router - serve index.html for unknown routes
+        return send_from_directory(app.static_folder, 'index.html')
 
 # Initialize analyzer
 try:
