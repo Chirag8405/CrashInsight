@@ -12,16 +12,16 @@ COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY eslint.config.js ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with memory optimization
+RUN npm install --no-audit --no-fund
 
 # Copy frontend source
 COPY src/ ./src/
 COPY public/ ./public/
 COPY index.html ./
 
-# Build frontend for production
-RUN npm run build
+# Build frontend for production with memory limits
+RUN NODE_OPTIONS="--max-old-space-size=480" npm run build
 
 # Stage 2: Python backend with static files
 FROM python:3.11-slim
@@ -29,20 +29,22 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for Python packages
-RUN apt-get update && apt-get install -y \
+# Install system dependencies for Python packages (optimized for memory)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     curl \
     graphviz \
     graphviz-dev \
     pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/cache/apt/*
 
-# Copy backend requirements
-COPY backend/requirements.txt ./
+# Copy backend requirements (use minimal for memory constraints)
+COPY backend/requirements-minimal.txt ./requirements.txt
 
-# Install Python dependencies
+# Install Python dependencies with memory optimization
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend code

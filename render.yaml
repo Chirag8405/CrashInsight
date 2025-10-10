@@ -8,8 +8,11 @@ services:
     branch: main
     numInstances: 1
     healthCheckPath: /api/health
+    buildCommand: docker build --memory=1g .
     envVars:
       - key: FLASK_ENV
         value: production
       - key: PORT
         value: 10000
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=480"
