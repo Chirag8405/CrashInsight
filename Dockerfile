@@ -4,6 +4,9 @@ FROM node:18-alpine AS frontend-build
 
 WORKDIR /app/frontend
 
+# Update npm to latest version for better compatibility
+RUN npm install -g npm@latest
+
 # Copy package files
 COPY package*.json ./
 COPY tsconfig*.json ./
@@ -12,8 +15,8 @@ COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY eslint.config.js ./
 
-# Install dependencies (including dev dependencies for build)
-RUN npm ci
+# Install dependencies (use npm install for better compatibility)
+RUN npm install --legacy-peer-deps
 
 # Copy frontend source
 COPY src/ ./src/
