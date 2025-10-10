@@ -10,10 +10,22 @@ from sklearn.tree import DecisionTreeClassifier, export_text, export_graphviz
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
-import graphviz
 import base64
 from io import StringIO
-from mlxtend.frequent_patterns import apriori, association_rules  
+try:
+    import graphviz
+    GRAPHVIZ_AVAILABLE = True
+except ImportError:
+    GRAPHVIZ_AVAILABLE = False
+    print("Warning: graphviz not available")
+
+try:
+    from mlxtend.frequent_patterns import apriori, association_rules
+    MLXTEND_AVAILABLE = True
+except ImportError:
+    MLXTEND_AVAILABLE = False
+    print("Warning: mlxtend not available")
+    
 import json
 from datetime import datetime
 import warnings
@@ -377,17 +389,27 @@ class TrafficAccidentAnalyzer:
             )
             
             # Create graphviz object and render to SVG
-            graph = graphviz.Source(dot_data, format='svg')
-            svg_data = graph.pipe(format='svg').decode('utf-8')
-            
-            # Encode SVG as base64 for easy transport
-            svg_base64 = base64.b64encode(svg_data.encode('utf-8')).decode('utf-8')
-            
-            return {
-                'svg_data': svg_data,
-                'svg_base64': svg_base64,
-                'dot_source': dot_data
-            }
+            if GRAPHVIZ_AVAILABLE:
+                graph = graphviz.Source(dot_data, format='svg')
+                svg_data = graph.pipe(format='svg').decode('utf-8')
+                
+                # Encode SVG as base64 for easy transport
+                svg_base64 = base64.b64encode(svg_data.encode('utf-8')).decode('utf-8')
+                
+                return {
+                    'svg_data': svg_data,
+                    'svg_base64': svg_base64,
+                    'dot_source': dot_data
+                }
+            else:
+                fallback_svg = '<svg><text x="10" y="20">Graphviz not available in this deployment</text></svg>'
+                svg_base64 = base64.b64encode(fallback_svg.encode('utf-8')).decode('utf-8')
+                
+                return {
+                    'svg_data': fallback_svg,
+                    'svg_base64': svg_base64,
+                    'dot_source': dot_data
+                }
             
         except Exception as e:
             print(f"Error generating graphviz tree: {e}")
@@ -544,6 +566,22 @@ class TrafficAccidentAnalyzer:
         
         # Generate frequent itemsets
         try:
+            if not MLXTEND_AVAILABLE:
+                # Return sample data if mlxtend is not available
+                return {
+                    'rules': [
+                        {
+                            'antecedents': ['Clear Weather'],
+                            'consequents': ['High Injury'],
+                            'support': 0.15,
+                            'confidence': 0.67,
+                            'lift': 1.23
+                        }
+                    ],
+                    'status': 'fallback_data',
+                    'message': 'Association rules mining unavailable - using sample data'
+                }
+            
             frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
             
             if len(frequent_itemsets) > 0:
