@@ -1,11 +1,8 @@
 # Multi-stage Docker build for CrashInsight
 # Stage 1: Build React frontend
-FROM node:18-alpine AS frontend-build
+FROM node:20-alpine AS frontend-build
 
 WORKDIR /app/frontend
-
-# Update npm to latest version for better compatibility
-RUN npm install -g npm@latest
 
 # Copy package files
 COPY package*.json ./
@@ -15,8 +12,8 @@ COPY tailwind.config.js ./
 COPY postcss.config.js ./
 COPY eslint.config.js ./
 
-# Install dependencies (use npm install for better compatibility)
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN npm install
 
 # Copy frontend source
 COPY src/ ./src/
