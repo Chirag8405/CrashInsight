@@ -49,9 +49,9 @@ CrashInsight is a comprehensive data analytics platform that leverages machine l
 ## 🛠️ Installation & Setup
 
 ### Prerequisites
-- Node.js (18+)
-- Python (3.8+)
-- Git
+- **Node.js** 18+ and **npm**
+- **Python** 3.8+ with **pip**
+- **Git** for version control
 
 ### 1. Clone Repository
 ```bash
@@ -73,12 +73,8 @@ npm run dev
 # Navigate to backend
 cd backend
 
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
 # Install dependencies
-pip install flask pandas numpy scikit-learn mlxtend
+pip install -r requirements.txt
 
 # Start Flask server
 python app.py
@@ -86,7 +82,15 @@ python app.py
 
 ### 4. Access Application
 - **Frontend**: http://localhost:5174
-- **Backend API**: http://localhost:5000
+- **Backend API**: http://localhost:5000/api
+
+## 🚀 Production Deployment
+
+This application is designed for deployment with:
+- **Backend**: Railway (Python Flask with dataset)
+- **Frontend**: Netlify (React build)
+
+See [RAILWAY_NETLIFY_DEPLOYMENT.md](RAILWAY_NETLIFY_DEPLOYMENT.md) for detailed deployment instructions.
 
 ## 📁 Project Structure
 

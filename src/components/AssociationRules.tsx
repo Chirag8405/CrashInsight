@@ -20,7 +20,7 @@ interface AssociationRulesProps {
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.MODE === 'production' ? '/.netlify/functions/api' : 'http://localhost:5000/api');
+  (import.meta.env.MODE === 'production' ? 'https://your-backend-url.railway.app/api' : 'http://localhost:5000/api');
 
 const AssociationRules: React.FC<AssociationRulesProps> = ({ onBack }) => {
   const [rules, setRules] = useState<AssociationRule[]>([]);

@@ -23,7 +23,8 @@ app = Flask(__name__)
 
 # Production CORS configuration
 if os.getenv('FLASK_ENV') == 'production':
-    CORS(app, origins=["https://your-frontend-domain.vercel.app", "https://crashinsight.vercel.app"])
+    # Add your Netlify domain here
+    CORS(app, origins=["https://*.netlify.app", "https://crashinsight.netlify.app"])
 else:
     CORS(app)  # Allow all origins in development
 

@@ -69,8 +69,15 @@ instance/
 .webassets-cache
 
 # Environment variables
-.env
+.env.production
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Railway
+.railway
+railway.json
+
+# Netlify
+.netlify
