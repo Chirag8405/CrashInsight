@@ -34,10 +34,17 @@ const Hero = () => {
           axios.get(`${API_BASE_URL}/time-analysis`)
         ]);
         
+        // Check for error responses
+        if (statsRes.data.error || timeRes.data.error) {
+          console.error('API returned error:', statsRes.data.error || timeRes.data.error);
+          return; // Don't update state if there's an error
+        }
+        
         setRealStats(statsRes.data);
         setTimeData(timeRes.data);
       } catch (error) {
         console.error('Failed to fetch real data:', error);
+        // Don't set fallback data, just leave empty
       } finally {
         setLoading(false);
       }

@@ -562,20 +562,7 @@ class TrafficAccidentAnalyzer:
         # Generate frequent itemsets
         try:
             if not MLXTEND_AVAILABLE:
-                # Return sample data if mlxtend is not available
-                return {
-                    'rules': [
-                        {
-                            'antecedents': ['Clear Weather'],
-                            'consequents': ['High Injury'],
-                            'support': 0.15,
-                            'confidence': 0.67,
-                            'lift': 1.23
-                        }
-                    ],
-                    'status': 'fallback_data',
-                    'message': 'Association rules mining unavailable - using sample data'
-                }
+                return {'error': 'Association rules mining unavailable. MLxtend library is required but not installed.'}
             
             frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
             
@@ -657,37 +644,51 @@ class TrafficAccidentAnalyzer:
 @app.route('/api/stats', methods=['GET'])
 def get_basic_stats():
     """Get basic statistics about accidents"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     return jsonify(analyzer.get_basic_stats())
 
 @app.route('/api/time-analysis', methods=['GET'])
 def get_time_analysis():
     """Get time-based analysis"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     return jsonify(analyzer.get_time_analysis())
 
 @app.route('/api/severity-analysis', methods=['GET'])
 def get_severity_analysis():
     """Get severity analysis"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     return jsonify(analyzer.get_severity_analysis())
 
 @app.route('/api/location-analysis', methods=['GET'])
 def get_location_analysis():
     """Get location-based analysis"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     return jsonify(analyzer.get_location_analysis())
 
 @app.route('/api/clustering', methods=['GET'])
 def perform_clustering():
     """Perform clustering analysis"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     n_clusters = request.args.get('clusters', 5, type=int)
     return jsonify(analyzer.perform_clustering(n_clusters))
 
 @app.route('/api/ml-model', methods=['GET'])
 def train_model():
     """Train and evaluate ML model"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     return jsonify(analyzer.train_severity_model())
 
 @app.route('/api/association-rules', methods=['GET'])
 def get_association_rules():
     """Generate association rules"""
+    if analyzer is None or analyzer.df is None:
+        return jsonify({'error': 'No data found from dataset. Please ensure the traffic_accidents.csv file is available.'}), 404
     min_support = request.args.get('min_support', 0.01, type=float)
     return jsonify(analyzer.generate_association_rules(min_support))
 

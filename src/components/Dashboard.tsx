@@ -146,6 +146,7 @@ const Dashboard = () => {
   const [clusterAnalysis, setClusterAnalysis] = useState<ClusterAnalysis | null>(null);
   const [apiStatus, setApiStatus] = useState('disconnected');
   const [showDecisionTreeModal, setShowDecisionTreeModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     checkAPIStatus();
@@ -173,226 +174,57 @@ const Dashboard = () => {
     try {
       console.log('🔄 Loading analytics data from:', API_BASE_URL);
       
-      // Load basic stats and time analysis (these endpoints exist in Netlify function)
-      const [statsRes, timeRes] = await Promise.all([
+      // Load all analytics data
+      const [statsRes, timeRes, severityRes, locationRes] = await Promise.all([
         axios.get(`${API_BASE_URL}/stats`),
-        axios.get(`${API_BASE_URL}/time-analysis`)
+        axios.get(`${API_BASE_URL}/time-analysis`),
+        axios.get(`${API_BASE_URL}/severity-analysis`),
+        axios.get(`${API_BASE_URL}/location-analysis`)
       ]);
       
-      console.log('✅ Stats response:', statsRes.data);
-      console.log('✅ Time analysis response:', timeRes.data);
+      // Check for error responses
+      if (statsRes.data.error) {
+        throw new Error(statsRes.data.error);
+      }
+      if (timeRes.data.error) {
+        throw new Error(timeRes.data.error);
+      }
+      if (severityRes.data.error) {
+        throw new Error(severityRes.data.error);
+      }
+      if (locationRes.data.error) {
+        throw new Error(locationRes.data.error);
+      }
+      
+      console.log('✅ Analytics data loaded successfully');
       
       setBasicStats(statsRes.data);
       setTimeAnalysis(timeRes.data);
+      setSeverityAnalysis(severityRes.data);
+      setLocationAnalysis(locationRes.data);
       
-      // Create mock data for severity and location analysis since these endpoints don't exist yet
-      const totalAccidents = timeRes.data?.hourly_distribution?.reduce((sum: number, h: any) => sum + (h?.accidents || 0), 0) || 1000;
-      const mockSeverityAnalysis = {
-        severity_distribution: [
-          { severity: 'No Injury', count: Math.round(totalAccidents * 0.6) },
-          { severity: 'Minor', count: Math.round(totalAccidents * 0.25) },
-          { severity: 'Moderate', count: Math.round(totalAccidents * 0.12) },
-          { severity: 'Severe', count: Math.round(totalAccidents * 0.03) }
-        ],
-        severity_by_weather: {},
-        severity_by_lighting: {}
-      };
-      
-      const mockLocationAnalysis = {
-        traffic_control_distribution: [
-          { type: 'Traffic Signal', count: 45 },
-          { type: 'Stop Sign', count: 30 },
-          { type: 'No Control', count: 25 }
-        ],
-        road_surface_distribution: [
-          { condition: 'Dry', count: 65 },
-          { condition: 'Wet', count: 25 },
-          { condition: 'Snow/Ice', count: 10 }
-        ],
-        trafficway_distribution: [
-          { type: 'City Street', count: 50 },
-          { type: 'Highway', count: 30 },
-          { type: 'County Road', count: 20 }
-        ]
-      };
-      
-      setSeverityAnalysis(mockSeverityAnalysis);
-      setLocationAnalysis(mockLocationAnalysis);
     } catch (error) {
       console.error('❌ Failed to load analytics data:', error);
-      
-      // Provide comprehensive fallback data
-      const fallbackStats = {
-        total_accidents: 209147,
-        fatal_accidents: 1847,
-        injury_accidents: 58392,
-        property_damage_only: 148908,
-        avg_injuries_per_accident: 0.42,
-        most_common_crash_type: 'REAR END',
-        most_common_weather: 'CLEAR',
-        most_common_lighting: 'DAYLIGHT'
-      };
-      
-      const fallbackTimeAnalysis = {
-        hourly_distribution: Array.from({length: 24}, (_, i) => ({
-          hour: i,
-          accidents: Math.floor(Math.random() * 1000) + 200
-        })),
-        daily_distribution: [
-          { day: 'Sunday', accidents: 12000 },
-          { day: 'Monday', accidents: 15000 },
-          { day: 'Tuesday', accidents: 16000 },
-          { day: 'Wednesday', accidents: 16500 },
-          { day: 'Thursday', accidents: 17000 },
-          { day: 'Friday', accidents: 18000 },
-          { day: 'Saturday', accidents: 14000 }
-        ],
-        monthly_distribution: [
-          { month: 'January', accidents: 15000 },
-          { month: 'February', accidents: 14000 },
-          { month: 'March', accidents: 16000 },
-          { month: 'April', accidents: 17000 },
-          { month: 'May', accidents: 18000 },
-          { month: 'June', accidents: 19000 },
-          { month: 'July', accidents: 20000 },
-          { month: 'August', accidents: 19500 },
-          { month: 'September', accidents: 18500 },
-          { month: 'October', accidents: 17500 },
-          { month: 'November', accidents: 16500 },
-          { month: 'December', accidents: 15500 }
-        ]
-      };
-      
-      setBasicStats(fallbackStats);
-      setTimeAnalysis(fallbackTimeAnalysis);
-      
-      // Create severity and location analysis based on fallback data
-      const fallbackSeverity = {
-        severity_distribution: [
-          { severity: 'No Injury', count: Math.round(fallbackStats.total_accidents * 0.6) },
-          { severity: 'Minor', count: Math.round(fallbackStats.total_accidents * 0.25) },
-          { severity: 'Moderate', count: Math.round(fallbackStats.total_accidents * 0.12) },
-          { severity: 'Severe', count: Math.round(fallbackStats.total_accidents * 0.03) }
-        ],
-        severity_by_weather: {},
-        severity_by_lighting: {}
-      };
-      
-      const fallbackLocation = {
-        traffic_control_distribution: [
-          { type: 'Traffic Signal', count: 45000 },
-          { type: 'Stop Sign', count: 30000 },
-          { type: 'No Control', count: 25000 }
-        ],
-        road_surface_distribution: [
-          { condition: 'Dry', count: 165000 },
-          { condition: 'Wet', count: 35000 },
-          { condition: 'Snow/Ice', count: 9147 }
-        ],
-        trafficway_distribution: [
-          { type: 'City Street', count: 120000 },
-          { type: 'Highway', count: 60000 },
-          { type: 'County Road', count: 29147 }
-        ]
-      };
-      
-      setSeverityAnalysis(fallbackSeverity);
-      setLocationAnalysis(fallbackLocation);
-      
-      console.log('🔄 Using fallback analytics data');
+      setError('No data found from dataset. Please ensure the traffic_accidents.csv file is available.');
     }
     setLoadingAnalytics(false);
   };  const loadMLData = async () => {
     setLoadingML(true);
     try {
       console.log('🔄 Loading ML data from:', `${API_BASE_URL}/ml-model`);
-      // Add cache-busting parameter to get fresh data
       const timestamp = new Date().getTime();
       const response = await axios.get(`${API_BASE_URL}/ml-model?refresh=${timestamp}`);
-      console.log('✅ Fresh ML Data received:', response.data);
+      
+      // Check for error responses
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+      
+      console.log('✅ ML Data loaded successfully');
       setMLModel(response.data);
     } catch (error) {
       console.error('❌ Failed to load ML data:', error);
-      
-      // Comprehensive fallback ML model data
-      const fallbackMLModel = {
-        random_forest: {
-          accuracy: 0.847,
-          confusion_matrix: [
-            [1240, 85, 45, 12],
-            [78, 892, 123, 34],
-            [32, 98, 567, 89],
-            [15, 42, 76, 234]
-          ],
-          feature_importance: {
-            'crash_hour': 0.18,
-            'weather_condition': 0.15,
-            'lighting_condition': 0.14,
-            'first_crash_type': 0.13,
-            'traffic_control': 0.11,
-            'num_units': 0.10,
-            'road_surface': 0.09,
-            'trafficway_type': 0.10
-          },
-          classification_report: `              precision    recall  f1-score   support\n\n   No Injury       0.85      0.90      0.87      1382\n       Minor       0.79      0.79      0.79      1127\n    Moderate       0.72      0.69      0.71       786\n      Severe       0.64      0.55      0.59       367\n\n    accuracy                           0.85      3662\n   macro avg       0.75      0.73      0.74      3662\nweighted avg       0.84      0.85      0.84      3662`
-        },
-        decision_tree: {
-          accuracy: 0.821,
-          confusion_matrix: [
-            [1198, 98, 67, 19],
-            [89, 856, 145, 37],
-            [45, 112, 543, 86],
-            [21, 56, 89, 201]
-          ],
-          feature_importance: {
-            'crash_hour': 0.22,
-            'weather_condition': 0.19,
-            'lighting_condition': 0.16,
-            'first_crash_type': 0.15,
-            'traffic_control': 0.10,
-            'num_units': 0.08,
-            'road_surface': 0.05,
-            'trafficway_type': 0.05
-          },
-          classification_report: `              precision    recall  f1-score   support\n\n   No Injury       0.82      0.87      0.84      1382\n       Minor       0.76      0.76      0.76      1127\n    Moderate       0.69      0.65      0.67       786\n      Severe       0.55      0.48      0.51       367\n\n    accuracy                           0.82      3662\n   macro avg       0.71      0.69      0.70      3662\nweighted avg       0.82      0.82      0.82      3662`
-        },
-        model_comparison: {
-          rf_accuracy: 0.847,
-          dt_accuracy: 0.821,
-          better_model: 'Random Forest',
-          accuracy_difference: 0.026
-        },
-        class_labels: ['No Injury', 'Minor', 'Moderate', 'Severe'],
-        test_size: 41829,
-        model_structures: {
-          decision_tree_rules: `|--- crash_hour <= 17.50\n|   |--- weather_condition <= 0.50\n|   |   |--- class: No Injury\n|   |--- weather_condition >  0.50\n|   |   |--- class: Minor\n|--- crash_hour >  17.50\n|   |--- lighting_condition <= 0.50\n|   |   |--- class: Minor\n|   |--- lighting_condition >  0.50\n|   |   |--- class: Moderate`,
-          decision_tree_full: `Root Node (1000 samples)\n├── crash_hour <= 17.5 (600 samples)\n│   ├── weather_condition <= 0.5 (480 samples) → No Injury\n│   └── weather_condition > 0.5 (120 samples) → Minor\n└── crash_hour > 17.5 (400 samples)\n    ├── lighting_condition <= 0.5 (200 samples) → Minor\n    └── lighting_condition > 0.5 (200 samples) → Moderate`,
-          random_forest_info: {
-            n_estimators: 100,
-            max_depth: 10,
-            feature_count: 8,
-            top_features: [
-              ['crash_hour', 0.18] as [string, number],
-              ['weather_condition', 0.15] as [string, number],
-              ['lighting_condition', 0.14] as [string, number],
-              ['first_crash_type', 0.13] as [string, number]
-            ],
-            all_features: [
-              ['crash_hour', 0.18] as [string, number],
-              ['weather_condition', 0.15] as [string, number],
-              ['lighting_condition', 0.14] as [string, number],
-              ['first_crash_type', 0.13] as [string, number],
-              ['traffic_control', 0.11] as [string, number],
-              ['num_units', 0.10] as [string, number],
-              ['road_surface', 0.09] as [string, number],
-              ['trafficway_type', 0.10] as [string, number]
-            ]
-          }
-        }
-      };
-      
-      setMLModel(fallbackMLModel);
-      console.log('🔄 Using fallback ML data');
+      setError('No data found from dataset. Please ensure the traffic_accidents.csv file is available.');
     }
     setLoadingML(false);
   };
@@ -401,9 +233,16 @@ const Dashboard = () => {
     setLoadingClustering(true);
     try {
       const response = await axios.get(`${API_BASE_URL}/clustering?clusters=5`);
+      
+      // Check for error responses
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+      
       setClusterAnalysis(response.data);
     } catch (error) {
       console.error('Failed to load clustering data:', error);
+      setError('No data found from dataset. Please ensure the traffic_accidents.csv file is available.');
     }
     setLoadingClustering(false);
   };
@@ -1884,12 +1723,35 @@ const Dashboard = () => {
           transition={{ duration: 0.5 }}
         >
           <>
-            {activeTab === 'analytics' && (loadingAnalytics ? (
+            {error ? (
               <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                <p className="mt-4 text-slate-600 dark:text-slate-400">Loading analytics data...</p>
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mb-4">
+                  <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">No Data Available</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-4 max-w-md mx-auto">{error}</p>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    loadAnalyticsData();
+                    loadMLData();
+                    loadClusteringData();
+                  }}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                >
+                  Retry
+                </button>
               </div>
-            ) : renderAnalytics())}
+            ) : (
+              <>
+                {activeTab === 'analytics' && (loadingAnalytics ? (
+                  <div className="text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    <p className="mt-4 text-slate-600 dark:text-slate-400">Loading analytics data...</p>
+                  </div>
+                ) : renderAnalytics())}
             
             {activeTab === 'models' && (loadingML ? (
               <div className="text-center py-12">
@@ -1905,8 +1767,10 @@ const Dashboard = () => {
               </div>
             ) : renderClustering())}
             
-            {activeTab === 'association' && (
-              <AssociationRules onBack={() => navigate('/dashboard?tab=analytics')} />
+                {activeTab === 'association' && (
+                  <AssociationRules onBack={() => navigate('/dashboard?tab=analytics')} />
+                )}
+              </>
             )}
           </>
         </motion.div>

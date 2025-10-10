@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   LinkIcon,
-  ArrowRightIcon,
-  AdjustmentsHorizontalIcon
+  ArrowRightIcon
 } from '@heroicons/react/24/outline';
+
 
 interface AssociationRule {
   antecedents: string[];
@@ -91,48 +91,20 @@ const AssociationRules: React.FC<AssociationRulesProps> = ({ onBack }) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/association-rules?min_support=${minSupport}`);
       
+      // Check for error response
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+      
       if (response.data?.rules && Array.isArray(response.data.rules)) {
         setRules(response.data.rules);
       } else {
-        // Create sample association rules for demonstration
-        const sampleRules = [
-          {
-            antecedents: ['poor_weather'],
-            consequents: ['higher_severity'],
-            support: 0.15,
-            confidence: 0.72,
-            lift: 2.1
-          },
-          {
-            antecedents: ['rush_hour'],
-            consequents: ['multiple_vehicles'],
-            support: 0.28,
-            confidence: 0.65,
-            lift: 1.8
-          }
-        ];
-        setRules(sampleRules);
+        throw new Error('No association rules data received');
       }
     } catch (error) {
       console.error('Failed to load association rules:', error);
-      // Set sample rules as fallback instead of showing error
-      const sampleRules = [
-        {
-          antecedents: ['poor_weather'],
-          consequents: ['higher_severity'],
-          support: 0.15,
-          confidence: 0.72,
-          lift: 2.1
-        },
-        {
-          antecedents: ['rush_hour'],
-          consequents: ['multiple_vehicles'],
-          support: 0.28,
-          confidence: 0.65,
-          lift: 1.8
-        }
-      ];
-      setRules(sampleRules);
+      setError('No data found from dataset. Please ensure the traffic_accidents.csv file is available.');
+      setRules([]);
     }
     setLoading(false);
   };
@@ -218,11 +190,23 @@ const AssociationRules: React.FC<AssociationRulesProps> = ({ onBack }) => {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <div className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-6 rounded-xl">
-              <AdjustmentsHorizontalIcon className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Association Rules Found</h3>
-              <p className="text-sm">{error}</p>
-              <p className="text-sm mt-2">Try reducing the minimum support threshold to find more patterns.</p>
+            <div className="bg-red-100 dark:bg-red-900/20 p-6 rounded-xl border border-red-200 dark:border-red-800">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full mb-4">
+                <svg className="w-8 h-8 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">No Data Available</h3>
+              <p className="text-red-600 dark:text-red-400">{error}</p>
+              <button
+                onClick={() => {
+                  setError(null);
+                  loadAssociationRules();
+                }}
+                className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors"
+              >
+                Retry
+              </button>
             </div>
           </div>
         ) : (
