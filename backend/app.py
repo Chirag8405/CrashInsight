@@ -73,6 +73,46 @@ class AccidentLocationAnalyzer:
     
     def __init__(self, df):
         self.df = df
+    
+    def _get_location_description(self, lat, lng):
+        """Generate human-readable location description from coordinates"""
+        # Baltimore area coordinates: ~39.2-39.4 N, 76.5-76.7 W
+        
+        # Determine general area based on coordinates
+        if lng < -76.65:
+            ew_direction = "West Baltimore"
+        elif lng < -76.58:
+            ew_direction = "Central Baltimore"
+        else:
+            ew_direction = "East Baltimore"
+        
+        if lat > 39.75:
+            ns_direction = "North"
+        elif lat > 39.65:
+            ns_direction = "Central"
+        else:
+            ns_direction = "South"
+        
+        # Create descriptive location
+        area_description = f"{ns_direction} {ew_direction}"
+        
+        # Add more specific landmarks based on coordinate ranges
+        if 39.28 < lat < 39.32 and -76.62 < lng < -76.60:
+            landmark = "near Downtown/Inner Harbor"
+        elif 39.32 < lat < 39.35 and -76.63 < lng < -76.61:
+            landmark = "near Penn Station area"
+        elif 39.35 < lat < 39.38 and -76.64 < lng < -76.62:
+            landmark = "near Druid Hill Park area"
+        elif lat > 39.4 and lng < -76.6:
+            landmark = "near I-83 corridor"
+        elif 39.25 < lat < 39.30 and lng > -76.58:
+            landmark = "near Canton/Fells Point"
+        elif lat < 39.25:
+            landmark = "near BWI Airport area"
+        else:
+            landmark = "area"
+        
+        return f"{area_description} {landmark}"
         
     def find_accident_hotspots(self, n_clusters=3):
         """WHERE Analysis: Use K-Means to identify accident concentration areas"""
@@ -118,11 +158,15 @@ class AccidentLocationAnalyzer:
                 "Suburban Residential Zone"
             ]
             
+            center_lat = float(cluster_data['Start_Lat'].mean())
+            center_lng = float(cluster_data['Start_Lng'].mean())
+            
             hotspot = {
                 'hotspot_id': cluster_id + 1,
                 'area_name': area_names[cluster_id] if cluster_id < len(area_names) else f"Zone {cluster_id + 1}",
-                'center_lat': float(cluster_data['Start_Lat'].mean()),
-                'center_lng': float(cluster_data['Start_Lng'].mean()),
+                'center_lat': center_lat,
+                'center_lng': center_lng,
+                'location_description': self._get_location_description(center_lat, center_lng),
                 'accident_count': len(cluster_data),
                 'avg_severity': float(cluster_data['Severity'].mean()),
                 'severity_description': self._get_severity_description(cluster_data['Severity'].mean()),

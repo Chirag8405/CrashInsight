@@ -5,6 +5,7 @@ interface Hotspot {
   area_name: string;
   center_lat: number;
   center_lng: number;
+  location_description: string;
   accident_count: number;
   avg_severity: number;
   severity_description: string;
@@ -82,15 +83,6 @@ const IntegratedAnalysis: React.FC = () => {
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getStrengthColor = (strength: string) => {
-    switch (strength) {
-      case 'Strong': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Moderate': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Weak': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -269,13 +261,16 @@ const IntegratedAnalysis: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Professional Analysis Header */}
-      <div className="bg-white rounded-lg shadow-lg p-8 border-l-4 border-blue-500">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">Traffic Safety Intelligence Report</h2>
-          <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-            Generated from Real Data Analysis
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-2xl p-8 text-white">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">🚦 Traffic Safety Intelligence Report</h1>
+            <p className="text-blue-100 text-lg">Data-Driven Analysis of 209,000+ Accidents</p>
+          </div>
+          <div className="text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+            ✓ Real-Time Analysis
           </div>
         </div>
         
@@ -354,70 +349,106 @@ const IntegratedAnalysis: React.FC = () => {
             
             const riskLevel = hotspot.avg_severity > 2.5 ? 'CRITICAL' :
                              hotspot.avg_severity > 1.5 ? 'HIGH' : 'MODERATE';
-            const riskColor = riskLevel === 'CRITICAL' ? 'red' : riskLevel === 'HIGH' ? 'orange' : 'yellow';
+            
+            // Define complete class names for Tailwind
+            const borderClass = riskLevel === 'CRITICAL' ? 'border-red-400' : 
+                               riskLevel === 'HIGH' ? 'border-orange-400' : 'border-yellow-400';
+            const headerGradient = riskLevel === 'CRITICAL' ? 'bg-gradient-to-r from-red-500 to-red-600' : 
+                                  riskLevel === 'HIGH' ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
+                                  'bg-gradient-to-r from-yellow-500 to-yellow-600';
             
             return (
-              <div key={hotspot.hotspot_id} className={`relative border-2 border-${riskColor}-300 rounded-xl overflow-hidden bg-gradient-to-br from-${riskColor}-50 to-gray-50`}>
+              <div key={hotspot.hotspot_id} className={`relative border-2 ${borderClass} rounded-2xl overflow-hidden bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300`}>
                 
                 {/* Risk Zone Header */}
-                <div className={`bg-gradient-to-r from-${riskColor}-500 to-${riskColor}-600 text-white p-4`}>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="text-xl font-bold flex items-center">
-                        🚨 Danger Zone #{hotspot.hotspot_id}
-                        <span className={`ml-3 px-3 py-1 rounded-full text-xs bg-${riskColor}-400 font-semibold`}>
-                          {riskLevel === 'CRITICAL' ? 'EXTREMELY DANGEROUS' : riskLevel === 'HIGH' ? 'VERY RISKY' : 'MODERATE RISK'}
-                        </span>
-                      </h4>
-                      <p className={`text-${riskColor}-100 text-sm mt-1`}>
-                        Location: {hotspot.center_lat.toFixed(4)}, {hotspot.center_lng.toFixed(4)}
-                      </p>
+                <div className={`${headerGradient} text-white p-6 relative`}>
+                  {/* Risk Level Badge */}
+                  <div className="absolute top-4 right-4">
+                    <span className="px-4 py-2 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm border-2 border-white/40 shadow-lg">
+                      {riskLevel === 'CRITICAL' ? '⚠️ CRITICAL' : riskLevel === 'HIGH' ? '🔴 HIGH RISK' : '🟡 MODERATE'}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-start pr-32">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-4xl">🚨</span>
+                        <div>
+                          <h3 className="text-2xl font-bold tracking-tight">
+                            {hotspot.area_name}
+                          </h3>
+                          <p className="text-sm opacity-90">Danger Zone #{hotspot.hotspot_id}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 mt-4 bg-white/10 backdrop-blur-sm rounded-lg p-3">
+                        <div className="flex items-start gap-2">
+                          <span className="text-lg">📍</span>
+                          <div>
+                            <p className="text-base font-semibold">{hotspot.location_description}</p>
+                            <p className="text-xs opacity-75 mt-1">
+                              Coordinates: {hotspot.center_lat.toFixed(4)}, {hotspot.center_lng.toFixed(4)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold">
+                    
+                    <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 ml-4">
+                      <div className="text-4xl font-bold mb-1">
                         {hotspot.accident_count.toLocaleString()}
                       </div>
-                      <div className={`text-${riskColor}-100 text-sm`}>accidents</div>
-                      <div className={`text-${riskColor}-200 text-xs`}>
-                        #{index + 1} by risk level
+                      <div className="text-sm font-medium opacity-90">TOTAL ACCIDENTS</div>
+                      <div className="text-xs opacity-75 mt-1">
+                        Rank #{index + 1}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Unified WHERE + WHY Analysis */}
-                <div className="p-6">
+                <div className="p-6 bg-gray-50">
                   <div className="grid lg:grid-cols-3 gap-6">
                     
                     {/* Location Intelligence */}
                     <div className="lg:col-span-1 space-y-4">
-                      <div className="bg-white p-4 rounded-lg border border-blue-200">
-                        <h5 className="font-semibold text-blue-800 mb-3 flex items-center">
-                          📍 Area Details
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-blue-200 shadow-sm">
+                        <h5 className="font-bold text-blue-900 mb-4 flex items-center text-lg">
+                          <span className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">📍</span>
+                          Zone Information
                         </h5>
                         
-                        <div className="space-y-3 text-sm">
-                          <div>
-                            <span className="font-medium text-gray-700 block">Area Size:</span>
-                            <span className="text-blue-600 font-medium">
-                              About {hotspot.radius_km.toFixed(1)} km stretch of road
+                        <div className="space-y-4">
+                          <div className="bg-white p-3 rounded-lg shadow-sm">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Location</span>
+                            <span className="text-blue-800 font-bold text-base block">
+                              {hotspot.location_description}
                             </span>
                           </div>
                           
-                          <div>
-                            <span className="font-medium text-gray-700 block">How Bad Are The Crashes:</span>
-                            <div className="flex items-center space-x-2">
+                          <div className="bg-white p-3 rounded-lg shadow-sm">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Coverage Area</span>
+                            <span className="text-blue-700 font-semibold text-base block">
+                              {hotspot.radius_km.toFixed(1)} km radius
+                            </span>
+                            <span className="text-xs text-gray-600">Approximately {(hotspot.radius_km * 2).toFixed(1)} km stretch</span>
+                          </div>
+                          
+                          <div className="bg-white p-3 rounded-lg shadow-sm">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Crash Severity</span>
+                            <div className="flex items-center gap-2">
                               <span className={`font-bold text-lg ${getSeverityColor(hotspot.avg_severity)}`}>
                                 {hotspot.severity_description}
                               </span>
                             </div>
                           </div>
                           
-                          <div>
-                            <span className="font-medium text-gray-700 block">Risk Assessment:</span>
-                            <span className="text-red-600 font-semibold">
-                              {hotspot.risk_level} Risk Zone
+                          <div className="bg-white p-3 rounded-lg shadow-sm border-l-4 border-red-500">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">Risk Level</span>
+                            <span className={`font-bold text-lg ${riskLevel === 'CRITICAL' ? 'text-red-600' : riskLevel === 'HIGH' ? 'text-orange-600' : 'text-yellow-600'}`}>
+                              {hotspot.risk_level}
                             </span>
+                            <span className="text-xs text-gray-600 block mt-1">Requires immediate attention</span>
                           </div>
                         </div>
                       </div>
@@ -426,55 +457,67 @@ const IntegratedAnalysis: React.FC = () => {
                     {/* Causal Intelligence - Only show if patterns exist */}
                     {relevantPatterns.length > 0 && (
                       <div className="lg:col-span-2">
-                        <div className="bg-white p-4 rounded-lg border border-purple-200">
-                          <h5 className="font-semibold text-purple-800 mb-3 flex items-center">
-                            🔍 What Usually Causes Crashes Here
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-5 rounded-xl border-2 border-purple-200 shadow-sm">
+                          <h5 className="font-bold text-purple-900 mb-4 flex items-center text-lg">
+                            <span className="bg-purple-500 text-white w-8 h-8 rounded-full flex items-center justify-center mr-2 text-sm">🔍</span>
+                            Contributing Factors
                           </h5>
                           
-                          <div className="grid gap-4">
+                          <div className="space-y-4">
                             {relevantPatterns.map((pattern, patternIndex) => (
-                            <div key={pattern.rule_id} className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border">
+                            <div key={pattern.rule_id} className="bg-white rounded-xl border-2 border-purple-200 shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
                               
-                              <div className="flex justify-between items-center mb-3">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-purple-600 font-bold text-sm">
-                                    Pattern #{patternIndex + 1}
-                                  </span>
-                                  <span className={`px-2 py-1 rounded-full text-xs ${getStrengthColor(pattern.strength)}`}>
-                                    {pattern.strength}
-                                  </span>
+                              <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 flex justify-between items-center">
+                                <div className="flex items-center gap-3">
+                                  <div className="bg-white/20 backdrop-blur-sm w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">
+                                    {patternIndex + 1}
+                                  </div>
+                                  <div>
+                                    <span className="font-bold text-sm block">Key Pattern</span>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold inline-block mt-1 ${
+                                      pattern.strength === 'Strong' ? 'bg-red-500' : 
+                                      pattern.strength === 'Moderate' ? 'bg-yellow-500' : 'bg-gray-500'
+                                    }`}>
+                                      {pattern.strength} Correlation
+                                    </span>
+                                  </div>
                                 </div>
-                                <div className="text-right">
-                                  <div className="text-lg font-bold text-purple-600">
+                                <div className="text-right bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
+                                  <div className="text-3xl font-bold">
                                     {Math.round(pattern.confidence * 100)}%
                                   </div>
-                                  <div className="text-xs text-gray-500">how often this happens</div>
+                                  <div className="text-xs opacity-90">Occurrence Rate</div>
                                 </div>
                               </div>
 
-                              {/* Human-Readable Rule */}
-                              <div className="bg-white p-3 rounded border-l-4 border-purple-300 mb-3">
-                                <div className="text-sm text-gray-800 font-medium">
-                                  {convertPatternToPlainEnglish(pattern)}
+                              <div className="p-5">
+                                {/* Human-Readable Explanation */}
+                                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border-l-4 border-purple-400 mb-4">
+                                  <p className="text-gray-800 font-medium leading-relaxed">
+                                    {convertPatternToPlainEnglish(pattern)}
+                                  </p>
                                 </div>
-                              </div>
 
-                              {/* Visual Rule Breakdown */}
-                              <div className="flex items-center justify-center space-x-2 text-xs">
-                                <div className="flex flex-wrap gap-1">
-                                  {pattern.conditions.slice(0, 3).map((condition, idx) => (
-                                    <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                      {convertToLaymanTerms(condition)}
-                                    </span>
-                                  ))}
-                                </div>
-                                <span className="text-purple-600 font-bold text-lg">leads to</span>
-                                <div className="flex flex-wrap gap-1">
-                                  {pattern.result.map((result, idx) => (
-                                    <span key={idx} className="bg-red-100 text-red-800 px-2 py-1 rounded">
-                                      {convertToLaymanTerms(result)}
-                                    </span>
-                                  ))}
+                                {/* Visual Rule Breakdown */}
+                                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                                  <div className="flex flex-wrap gap-2 justify-center">
+                                    {pattern.conditions.slice(0, 3).map((condition, idx) => (
+                                      <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-2 rounded-lg font-semibold text-sm shadow-sm">
+                                        {convertToLaymanTerms(condition)}
+                                      </span>
+                                    ))}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-purple-600 font-bold text-xl">→</span>
+                                    <span className="text-gray-600 text-sm font-medium">causes</span>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2 justify-center">
+                                    {pattern.result.map((result, idx) => (
+                                        <span key={idx} className="bg-red-100 text-red-800 px-3 py-2 rounded-lg font-semibold text-sm shadow-sm">
+                                        {convertToLaymanTerms(result)}
+                                      </span>
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -486,25 +529,47 @@ const IntegratedAnalysis: React.FC = () => {
                   </div>
                   
                   {/* Integrated Insight */}
-                  <div className={`mt-4 p-4 bg-gradient-to-r from-${riskColor}-100 to-orange-100 rounded-lg border-l-4 border-${riskColor}-400`}>
-                    <div className="flex items-start space-x-3">
-                      <span className="text-2xl">💡</span>
-                      <div>
-                        <h6 className={`font-bold text-${riskColor}-800 mb-2`}>What This Means:</h6>
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          <strong>Zone Summary:</strong> This dangerous area has seen {hotspot.accident_count.toLocaleString()} car crashes 
-                          within a {hotspot.radius_km.toFixed(1)}km stretch of road.
-                          {relevantPatterns.length > 0 ? (
-                            <>
-                              {' '}Our analysis found that{' '}
-                              <em>{convertToLaymanTerms(relevantPatterns[0].conditions[0])}</em>{' '}
-                              typically results in <em>{convertToLaymanTerms(relevantPatterns[0].result[0])}</em>{' '}
-                              - this happens {Math.round(relevantPatterns[0].confidence * 100)}% of the time.
-                            </>
-                          ) : (
-                            ' Further investigation is needed to determine specific contributing factors for accidents in this area.'
-                          )}
-                          <strong> This is a {hotspot.risk_level.toLowerCase()} risk zone requiring extra caution.</strong>
+                  <div className={`mt-6 rounded-xl border-2 shadow-lg overflow-hidden ${
+                    riskLevel === 'CRITICAL' ? 'bg-gradient-to-r from-red-50 via-orange-50 to-yellow-50 border-red-200' :
+                    riskLevel === 'HIGH' ? 'bg-gradient-to-r from-orange-50 via-yellow-50 to-amber-50 border-orange-200' :
+                    'bg-gradient-to-r from-yellow-50 via-amber-50 to-orange-50 border-yellow-200'
+                  }`}>
+                    <div className={`text-white px-5 py-3 ${
+                      riskLevel === 'CRITICAL' ? 'bg-gradient-to-r from-red-500 to-orange-500' :
+                      riskLevel === 'HIGH' ? 'bg-gradient-to-r from-orange-500 to-amber-500' :
+                      'bg-gradient-to-r from-yellow-500 to-orange-500'
+                    }`}>
+                      <h6 className="font-bold text-lg flex items-center gap-2">
+                        <span className="text-2xl">💡</span>
+                        Key Takeaway
+                      </h6>
+                    </div>
+                    <div className="p-5">
+                      <p className="text-gray-800 text-base leading-relaxed">
+                        <span className="font-bold text-gray-900">Zone Summary:</span> This dangerous area has recorded{' '}
+                        <span className="font-bold text-red-600">{hotspot.accident_count.toLocaleString()} accidents</span>{' '}
+                        within a <span className="font-semibold">{hotspot.radius_km.toFixed(1)}km radius</span>.
+                        {relevantPatterns.length > 0 ? (
+                          <>
+                            {' '}Data analysis reveals that{' '}
+                            <span className="font-bold text-blue-700">{convertToLaymanTerms(relevantPatterns[0].conditions[0])}</span>{' '}
+                            consistently leads to{' '}
+                            <span className="font-bold text-red-700">{convertToLaymanTerms(relevantPatterns[0].result[0])}</span>,{' '}
+                            occurring in <span className="font-bold">{Math.round(relevantPatterns[0].confidence * 100)}%</span> of similar cases.
+                          </>
+                        ) : (
+                          ' Additional investigation is recommended to identify specific contributing factors for this location.'
+                        )}
+                      </p>
+                      <div className={`mt-4 p-3 bg-white rounded-lg border-l-4 ${
+                        riskLevel === 'CRITICAL' ? 'border-red-500' : 
+                        riskLevel === 'HIGH' ? 'border-orange-500' : 'border-yellow-500'
+                      }`}>
+                        <p className="text-sm font-semibold text-gray-900">
+                          ⚠️ Classification: <span className={`${
+                            riskLevel === 'CRITICAL' ? 'text-red-600' : 
+                            riskLevel === 'HIGH' ? 'text-orange-600' : 'text-yellow-600'
+                          }`}>{hotspot.risk_level} RISK ZONE</span> — Enhanced safety measures recommended
                         </p>
                       </div>
                     </div>
