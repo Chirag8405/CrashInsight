@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import TrafficVisualizations from './TrafficVisualizations';
 
 interface Hotspot {
   hotspot_id: number;
@@ -322,6 +323,9 @@ const IntegratedAnalysis: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Data Visualizations */}
+      <TrafficVisualizations hotspots={locationData.hotspots} patterns={causeData.causal_patterns} />
 
       {/* Integrated Hotspot-Cause Visualization */}
       <div className="bg-white rounded-lg shadow-lg p-6">

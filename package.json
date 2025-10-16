@@ -8,13 +8,20 @@
     "type": "git",
     "url": "https://github.com/Chirag8405/CrashInsight.git"
   },
-  "keywords": ["traffic-safety", "accident-analytics", "machine-learning", "react", "python", "data-visualization"],
+  "keywords": [
+    "traffic-safety",
+    "accident-analytics",
+    "machine-learning",
+    "react",
+    "python",
+    "data-visualization"
+  ],
   "author": "Chirag",
   "license": "MIT",
   "scripts": {
     "dev": "netlify dev",
     "dev:vite": "vite",
-    "build": "tsc -b && vite build", 
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "netlify:dev": "netlify dev",
@@ -24,7 +31,7 @@
     "@heroicons/react": "^2.2.0",
     "autoprefixer": "^10.4.21",
     "axios": "^1.12.2",
-    "chart.js": "^4.5.0",
+    "chart.js": "^4.5.1",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.545.0",
     "postcss": "^8.5.6",
