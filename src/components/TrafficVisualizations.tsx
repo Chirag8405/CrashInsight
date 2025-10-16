@@ -336,68 +336,170 @@ const TrafficVisualizations: React.FC<TrafficVisualizationsProps> = ({ hotspots,
 
   return (
     <div className="space-y-8">
-      {/* Section Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-2xl p-6 text-white">
-        <h2 className="text-3xl font-bold mb-2 flex items-center gap-3">
-          <span className="text-4xl">📊</span>
-          Data Visualizations & Insights
-        </h2>
-        <p className="text-indigo-100">Interactive charts showing accident patterns and risk distribution</p>
+      {/* Professional Section Header */}
+      <div className="professional-card rounded-lg shadow-sm border border-slate-200 bg-white overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-8 py-8">
+          <div className="flex items-center gap-4">
+            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg border border-white/20 flex-shrink-0">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-3xl font-bold mb-2 text-white">
+                Data Visualizations & Insights
+              </h2>
+              <p className="text-slate-300 text-base leading-relaxed">
+                Interactive charts revealing accident patterns and risk distribution across Baltimore
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Charts Grid */}
+      {/* Professional Charts Grid */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Bar Chart - Main Analysis */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl p-6 border-2 border-blue-100">
-          <div className="h-96">
-            <Bar data={zoneBarData} options={barOptions} />
+        <div className="lg:col-span-2 professional-card rounded-lg shadow-sm border border-slate-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-600 p-2 rounded flex-shrink-0">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Zone Comparison Analysis</h3>
+                <p className="text-sm text-slate-600">Total accidents by geographic zone</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-            <p className="text-sm text-gray-700">
-              <strong className="text-blue-700">Analysis:</strong> This chart shows the total number of accidents in each geographic danger zone. 
-              Bar colors indicate risk levels: <span className="text-red-600 font-semibold">Red (Critical)</span>, 
-              <span className="text-orange-600 font-semibold"> Orange (High)</span>, 
-              <span className="text-yellow-600 font-semibold"> Yellow (Moderate)</span>.
-            </p>
+          <div className="p-6">
+            <div className="h-96 bg-slate-50 rounded border border-slate-200 p-4">
+              <Bar data={zoneBarData} options={barOptions} />
+            </div>
+            <div className="mt-5 p-4 bg-blue-50 rounded border-l-4 border-blue-600">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-medium text-slate-900 text-sm mb-1">Analysis Overview</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    This chart displays the total number of accidents across each geographic danger zone. 
+                    Bar colors represent risk severity: <span className="font-medium text-red-600">Red (Critical)</span>, 
+                    <span className="font-medium text-orange-600"> Orange (High)</span>, 
+                    <span className="font-medium text-yellow-600"> Yellow (Moderate)</span>.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Pie Chart */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-purple-100">
-          <div className="h-80">
-            <Pie data={pieData} options={pieOptions} />
+        <div className="professional-card rounded-lg shadow-sm border border-slate-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-purple-600 p-2 rounded flex-shrink-0">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Risk Distribution</h3>
+                <p className="text-sm text-slate-600">Proportional accident allocation</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-            <p className="text-sm text-gray-700">
-              <strong className="text-purple-700">Insight:</strong> Shows the proportion of accidents across different risk categories, 
-              helping prioritize resource allocation.
-            </p>
+          <div className="p-6">
+            <div className="h-80 bg-slate-50 rounded border border-slate-200 p-4">
+              <Pie data={pieData} options={pieOptions} />
+            </div>
+            <div className="mt-5 p-4 bg-purple-50 rounded border-l-4 border-purple-600">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <div>
+                  <p className="font-medium text-slate-900 text-sm mb-1">Key Insight</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Proportional distribution of accidents across risk categories, enabling strategic resource allocation and priority planning.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Doughnut Chart */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-green-100">
-          <div className="h-80">
-            <Doughnut data={doughnutData} options={doughnutOptions} />
+        <div className="professional-card rounded-lg shadow-sm border border-slate-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-emerald-600 p-2 rounded flex-shrink-0">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Severity Breakdown</h3>
+                <p className="text-sm text-slate-600">Incident classification by severity</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-            <p className="text-sm text-gray-700">
-              <strong className="text-green-700">Insight:</strong> Breakdown of crash severity levels, showing the distribution 
-              from minor incidents to severe/fatal accidents.
-            </p>
+          <div className="p-6">
+            <div className="h-80 bg-slate-50 rounded border border-slate-200 p-4">
+              <Doughnut data={doughnutData} options={doughnutOptions} />
+            </div>
+            <div className="mt-5 p-4 bg-emerald-50 rounded border-l-4 border-emerald-600">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <div>
+                  <p className="font-medium text-slate-900 text-sm mb-1">Key Insight</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    Comprehensive breakdown of crash severity levels, ranging from minor property damage to severe and fatal incidents.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Horizontal Bar Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl p-6 border-2 border-indigo-100">
-          <div className="h-80">
-            <Bar data={horizontalBarData} options={horizontalBarOptions} />
+        <div className="lg:col-span-2 professional-card rounded-lg shadow-sm border border-slate-200 bg-white overflow-hidden hover:shadow-md transition-shadow">
+          <div className="border-b border-slate-200 bg-slate-50 px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-600 p-2 rounded flex-shrink-0">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">Contributing Factors Analysis</h3>
+                <p className="text-sm text-slate-600">Primary accident causation factors</p>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
-            <p className="text-sm text-gray-700">
-              <strong className="text-indigo-700">Key Finding:</strong> This chart ranks the most significant factors contributing to accidents, 
-              based on association rule analysis. Higher scores indicate stronger correlation with accident occurrence.
-            </p>
+          <div className="p-6">
+            <div className="h-80 bg-slate-50 rounded border border-slate-200 p-4">
+              <Bar data={horizontalBarData} options={horizontalBarOptions} />
+            </div>
+            <div className="mt-5 p-4 bg-indigo-50 rounded border-l-4 border-indigo-600">
+              <div className="flex items-start gap-3">
+                <svg className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                  <p className="font-medium text-slate-900 text-sm mb-1">Critical Finding</p>
+                  <p className="text-slate-700 text-sm leading-relaxed">
+                    This chart ranks the most significant factors contributing to accidents based on association rule analysis. 
+                    Higher confidence scores indicate stronger correlation with accident occurrence and severity.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

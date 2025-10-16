@@ -262,64 +262,129 @@ const IntegratedAnalysis: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Professional Analysis Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-2xl p-8 text-white">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">🚦 Traffic Safety Intelligence Report</h1>
-            <p className="text-blue-100 text-lg">Data-Driven Analysis of 209,000+ Accidents</p>
-          </div>
-          <div className="text-sm bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-            ✓ Real-Time Analysis
+    <div className="space-y-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Professional Analysis Header - Corporate Design */}
+      <div className="professional-card rounded-3xl shadow-3xl overflow-hidden border border-gray-200">
+        {/* Header Section - Clean Corporate Style */}
+        <div className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 p-10 relative overflow-hidden">
+          {/* Subtle Grid Pattern */}
+          <div className="absolute inset-0 opacity-5" style={{
+            backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
+            backgroundSize: '20px 20px'
+          }}></div>
+          
+          <div className="relative z-10">
+            <div className="flex items-start justify-between mb-8 flex-wrap gap-6">
+              <div className="flex-1 min-w-[300px]">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/20">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className="text-4xl font-bold text-white mb-1 tracking-tight">Traffic Safety Analytics Report</h1>
+                    <p className="text-gray-300 text-lg font-medium">Comprehensive Analysis of 209,303 Traffic Incidents</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-lg border border-white/20">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-semibold text-white">Active</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Executive Summary - Professional Style */}
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-blue-500/20 backdrop-blur-sm p-2.5 rounded-lg flex-shrink-0 border border-blue-400/30">
+                  <svg className="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-white mb-2 text-lg">Executive Summary</h3>
+                  <p className="text-gray-200 leading-relaxed text-base">
+                    Analysis of <span className="font-bold text-white">{locationData.total_accidents_analyzed.toLocaleString()}</span> traffic accidents has identified <span className="font-bold text-white">{locationData.hotspots_identified}</span> critical risk zones requiring immediate attention. 
+                    Using machine learning algorithms, we've discovered primary contributing factors and temporal patterns, providing actionable insights for traffic safety improvements.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6 rounded-xl mb-6 border border-blue-100">
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-500 text-white p-2 rounded-lg flex-shrink-0">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+        {/* Key Metrics - Corporate Dashboard Style */}
+        <div className="bg-white p-8">
+          <div className="grid md:grid-cols-4 gap-6">
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 hover:border-blue-400 transition-all hover:shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="bg-blue-100 p-2 rounded-lg">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Total</span>
+              </div>
+              <div className="text-4xl font-black text-slate-800 mb-1">
+                {locationData.total_accidents_analyzed.toLocaleString()}
+              </div>
+              <div className="text-slate-600 text-sm font-semibold">Accidents Analyzed</div>
+              <div className="text-xs text-slate-500 mt-2">Complete dataset coverage</div>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Executive Summary</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Our comprehensive analysis of <strong>{locationData.total_accidents_analyzed.toLocaleString()}</strong> traffic accidents has identified <strong>{locationData.hotspots_identified}</strong> critical risk zones requiring immediate attention. 
-                Using machine learning algorithms, we've discovered the primary contributing factors and timing patterns that lead to accidents in each area, providing actionable insights for safety improvements.
-              </p>
+            
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 hover:border-emerald-400 transition-all hover:shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="bg-emerald-100 p-2 rounded-lg">
+                  <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Zones</span>
+              </div>
+              <div className="text-4xl font-black text-slate-800 mb-1">
+                {locationData.hotspots_identified}
+              </div>
+              <div className="text-slate-600 text-sm font-semibold">High-Risk Zones</div>
+              <div className="text-xs text-slate-500 mt-2">Geographic clusters identified</div>
             </div>
-          </div>
-        </div>
-        
-        <div className="grid md:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200 text-center">
-            <div className="text-3xl font-bold text-blue-700 mb-1">
-              {locationData.total_accidents_analyzed.toLocaleString()}
+            
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 hover:border-indigo-400 transition-all hover:shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="bg-indigo-100 p-2 rounded-lg">
+                  <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Rules</span>
+              </div>
+              <div className="text-4xl font-black text-slate-800 mb-1">
+                {causeData.patterns_discovered.toLocaleString()}
+              </div>
+              <div className="text-slate-600 text-sm font-semibold">Pattern Rules</div>
+              <div className="text-xs text-slate-500 mt-2">Contributing factors found</div>
             </div>
-            <div className="text-blue-800 text-sm font-medium">Accidents Analyzed</div>
-            <div className="text-xs text-blue-600 mt-1">Complete dataset coverage</div>
-          </div>
-          <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-xl border border-emerald-200 text-center">
-            <div className="text-3xl font-bold text-emerald-700 mb-1">
-              {locationData.hotspots_identified}
+            
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-xl border-2 border-slate-200 hover:border-amber-400 transition-all hover:shadow-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div className="bg-amber-100 p-2 rounded-lg">
+                  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Accuracy</span>
+              </div>
+              <div className="text-4xl font-black text-slate-800 mb-1">
+                {Math.round(causeData.causal_patterns[0]?.confidence * 100 || 0)}%
+              </div>
+              <div className="text-slate-600 text-sm font-semibold">Confidence Rate</div>
+              <div className="text-xs text-slate-500 mt-2">Highest pattern accuracy</div>
             </div>
-            <div className="text-emerald-800 text-sm font-medium">High-Risk Zones</div>
-            <div className="text-xs text-emerald-600 mt-1">Geographic clusters</div>
-          </div>
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200 text-center">
-            <div className="text-3xl font-bold text-purple-700 mb-1">
-              {causeData.patterns_discovered.toLocaleString()}
-            </div>
-            <div className="text-purple-800 text-sm font-medium">Pattern Rules</div>
-            <div className="text-xs text-purple-600 mt-1">Contributing factors</div>
-          </div>
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-xl border border-amber-200 text-center">
-            <div className="text-3xl font-bold text-amber-700 mb-1">
-              {Math.round(causeData.causal_patterns[0]?.confidence * 100 || 0)}%
-            </div>
-            <div className="text-amber-800 text-sm font-medium">Confidence Rate</div>
-            <div className="text-xs text-amber-600 mt-1">Highest pattern accuracy</div>
           </div>
         </div>
       </div>
@@ -328,10 +393,20 @@ const IntegratedAnalysis: React.FC = () => {
       <TrafficVisualizations hotspots={locationData.hotspots} patterns={causeData.causal_patterns} />
 
       {/* Integrated Hotspot-Cause Visualization */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-6">
-          🚨 Geographic Risk Assessment & Contributing Factor Analysis
-        </h3>
+      <div className="professional-card rounded-3xl shadow-3xl p-8">
+        <div className="flex items-center mb-8">
+          <div className="bg-gradient-to-br from-red-500 to-orange-600 p-3 rounded-xl mr-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              Geographic Risk Assessment
+            </h3>
+            <p className="text-gray-600 font-medium mt-1">Critical danger zones with causal analysis</p>
+          </div>
+        </div>
         
         <div className="space-y-8">
           {locationData.hotspots
@@ -586,30 +661,61 @@ const IntegratedAnalysis: React.FC = () => {
       </div>
 
       {/* Summary Recommendations */}
-      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg shadow-lg p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">🎯 Strategic Recommendations</h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bg-white p-4 rounded-lg border-l-4 border-green-500">
-            <h4 className="font-semibold text-green-800 mb-2">🗺️ Geographic Focus</h4>
-            <p className="text-sm text-gray-700">
-              Target the top {locationData.hotspots_identified} risk zones which contain{' '}
-              <strong>{locationData.hotspots.reduce((sum, h) => sum + h.accident_count, 0).toLocaleString()} total accidents</strong>.
+      <div className="professional-card rounded-3xl shadow-3xl p-8 bg-gradient-to-br from-green-50 via-blue-50 to-indigo-50">
+        <div className="flex items-center mb-6">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-xl mr-4">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Strategic Recommendations</h3>
+            <p className="text-gray-600 font-medium mt-1">Data-driven action items for traffic safety improvements</p>
+          </div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-green-200 hover:shadow-xl transition-all hover:scale-105 transform">
+            <div className="flex items-center mb-3">
+              <div className="bg-green-500 text-white p-2 rounded-lg mr-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-green-900 text-lg">Geographic Focus</h4>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
+              Target the top <strong className="text-green-700">{locationData.hotspots_identified} risk zones</strong> which contain{' '}
+              <strong className="text-green-700">{locationData.hotspots.reduce((sum, h) => sum + h.accident_count, 0).toLocaleString()} total accidents</strong> for maximum impact.
             </p>
           </div>
           
-          <div className="bg-white p-4 rounded-lg border-l-4 border-purple-500">
-            <h4 className="font-semibold text-purple-800 mb-2">🧠 Causal Targeting</h4>
-            <p className="text-sm text-gray-700">
-              Address <strong>{causeData.causal_patterns.slice(0, 5).filter(p => p.strength === 'Strong').length} strong causal patterns</strong>{' '}
-              with confidence levels above 70% for maximum impact.
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-purple-200 hover:shadow-xl transition-all hover:scale-105 transform">
+            <div className="flex items-center mb-3">
+              <div className="bg-purple-500 text-white p-2 rounded-lg mr-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-purple-900 text-lg">Causal Targeting</h4>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
+              Address <strong className="text-purple-700">{causeData.causal_patterns.slice(0, 5).filter(p => p.strength === 'Strong').length} strong causal patterns</strong>{' '}
+              with confidence levels above 70% for maximum effectiveness.
             </p>
           </div>
           
-          <div className="bg-white p-4 rounded-lg border-l-4 border-orange-500">
-            <h4 className="font-semibold text-orange-800 mb-2">⏰ Temporal Strategy</h4>
-            <p className="text-sm text-gray-700">
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl border-2 border-orange-200 hover:shadow-xl transition-all hover:scale-105 transform">
+            <div className="flex items-center mb-3">
+              <div className="bg-orange-500 text-white p-2 rounded-lg mr-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h4 className="font-bold text-orange-900 text-lg">Temporal Strategy</h4>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
               Deploy resources during identified peak times, particularly around{' '}
-              areas with <strong>{locationData.hotspots[0]?.risk_level || 'elevated'} risk levels</strong>.
+              areas with <strong className="text-orange-700">{locationData.hotspots[0]?.risk_level || 'elevated'} risk levels</strong>.
             </p>
           </div>
         </div>
