@@ -359,7 +359,7 @@ function App() {
           </div>
           <div className="border-t border-gray-200 pt-6">
             <p className="text-center text-gray-500 text-xs">
-              © 2024 CrashInsight Analytics • Advanced Data Mining & Business Intelligence Platform
+              © 2025 CrashInsight Analytics • Advanced Data Mining & Business Intelligence Platform
             </p>
           </div>
         </div>
